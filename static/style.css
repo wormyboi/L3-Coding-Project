@@ -1,0 +1,47 @@
+.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: lightgrey;
+}
+
+.navbutton {
+    float: left;
+}
+
+.navlink {
+    color: black;
+    display: block;
+    text-align: center;
+    padding: 15px;
+    text-decoration: none;
+}
+
+.navlink:hover {
+    color: black;
+    background-color: gray;
+}
+
+.currentnav{
+    color: whitesmoke;
+    display: block;
+    text-align: center;
+    padding: 15px;
+    text-decoration: none;
+    background-color: darkred;
+}
+
+#profilelink {
+    float: right;
+    margin-right: 5px;
+}
+
+.banner {
+    text-align: center;
+    width: 100%;
+    margin-top: 0%;
+    padding-top: 7%;
+    padding-bottom: 8%;
+    background-color: aqua;
+}

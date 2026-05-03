@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Informative Title</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <ul class="navbar">
+            <li class="navbutton">
+                <a class="currentnav" href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li class="navbutton">
+                <a class="navlink">Modules</a>
+            </li>
+            <li class="navbutton" id="profilelink">
+                <a class="navlink">My Profile</a>
+            </li>
+        </ul>
+        <h1 class="banner">Home</h1>
+    </body>
+</html>
