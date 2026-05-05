@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Informative Title{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <ul class="navbar">
+            <li class="navbutton">
+                <a {% block home %}class="navlink"{% endblock %} href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li class="navbutton">
+                <a {% block modules %}class="navlink"{% endblock %} href="{{ url_for('modules') }}">Modules</a>
+            </li>
+            <li class="navbutton" id="profilelink">
+                <a {% block profile %}class="navlink"{% endblock %} href="{{ url_for('profile') }}">My Profile</a>
+            </li>
+        </ul>
+        <h1 class="banner">{% block heading %}Title{% endblock %}</h1>
+        {% block content %}
+
+        {% endblock %}
+    </body>
+</html>

@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 
-{% block title %}Informative title{% endblock %}
+{% block title %}Informative title - all modules{% endblock %}
 
-{% block heading %}Home{% endblock %}
+{% block heading %}Modules{% endblock %}
 
-{% block home %}class="currentnav"{% endblock %}
+{% block modules %}class="currentnav"{% endblock %}
 
 {% block content %}
     <head>
@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
-        <p>Some writing</p>
+        
     </body>
 {% endblock %}
 </html>
