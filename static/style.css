@@ -45,3 +45,40 @@
     /*padding-bottom: 8%;*/
     background-color: aqua;
 }
+
+.drop {
+    position: relative;
+}
+
+.drop_button {
+    cursor: pointer;
+}
+
+.drop_content {
+    display: none;
+    position: absolute;
+    background-color: whitesmoke;
+    width: 100%;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(26, 26, 26, 0.616);
+}
+
+.drop_link {
+    color: black;
+    padding: 15px;
+    text-decoration: none;
+    display: block;
+}
+
+.drop_link:hover {
+    background-color: yellow;
+}
+
+.drop:hover .drop_content {
+    display: block;
+}
+
+.drop:hover .drop_button {
+    background-color: crimson;
+    color: whitesmoke;
+}

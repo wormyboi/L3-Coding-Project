@@ -7,10 +7,15 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
-#modules page
+#all modules page
 @app.route('/modules')
 def modules():
     return render_template('modules.html')
+
+#attempted modules page
+@app.route('/attempted')
+def attempted():
+    return render_template('attempted.html')
 
 #profile page
 @app.route('/profile')
