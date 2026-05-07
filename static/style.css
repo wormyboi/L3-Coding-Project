@@ -44,6 +44,7 @@
     padding-top: 7%;
     /*padding-bottom: 8%;*/
     background-color: aqua;
+    margin-bottom: 0%;
 }
 
 .drop {
@@ -86,4 +87,24 @@
 .acc_banner {
     text-align: center;
     background-color: whitesmoke;
+    margin-top: 0%;
+    overflow: hidden;
+    padding: 2% 0 4% 0;
+}
+
+.banner_content {
+    display: inline-block;
+    width: 170px;
+    padding: 0 2% 0 2%
+}
+
+button {
+    padding: 5px 10px 5px 10px;
+    border: 0;
+    background-color: coral;
+    color: whitesmoke;
+}
+
+button:hover {
+    box-shadow: 8px 4px 4px 0 rgb(12, 12, 12);
 }

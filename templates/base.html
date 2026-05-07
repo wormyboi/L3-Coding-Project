@@ -11,7 +11,7 @@
                 <a {% block home %}class="navlink"{% endblock %} href="{{ url_for('home') }}">Home</a>
             </li>
             <li class="navbutton" class="drop">
-                <button {% block modules %}class="navlink"{% endblock %} class="drop_button">Modules</button>
+                <a {% block modules %}class="navlink"{% endblock %} class="drop_button">Modules</a>
                 <div class="drop_content">
                     <a class="drop_link" href="{{ url_for('modules') }}">All Modules</a>
                     <a class="drop_link" href="{{ url_for('attempted') }}">Attempted Modules</a>
