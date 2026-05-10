@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block title %}Informative title - log in{% endblock %}
+
+{% block heading %}Log in{% endblock %}
+
+{% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <form action="/" method="POST" class="login">
+            <label for="log_user">Username:</label>
+            <input type="text" name="log_user" id="log_user" placeholder="username"><br>
+            <label for="log_pass">Password:</label>
+            <input type="text" name="log_pass" id="log_pass" placeholder="password"><br>
+            <input type="submit" value="Log in">
+        </form>
+    </body>
+{% endblock %}
+</html>

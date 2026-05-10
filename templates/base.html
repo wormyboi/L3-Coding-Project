@@ -27,11 +27,11 @@
                 <h3>Log in or sign up to save your progress</h3>
                 <div class="banner_content">
                     <p>Already have an account?</p>
-                    <button>Log in</button>
+                    <a class="log_button" href="{{ url_for('login') }}">Log in</a>
                 </div>
                 <div class="banner_content">
                     <p>New here?</p>
-                    <button>Sign up</button>
+                    <a class="log_button">Sign up</a>
                 </div>
             </div>
         {% endif %}

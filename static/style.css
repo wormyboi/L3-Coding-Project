@@ -95,16 +95,20 @@
 .banner_content {
     display: inline-block;
     width: 170px;
-    padding: 0 2% 0 2%
+    padding: 0 2% 0 2%;
+    margin-right: 2%;
+    margin-left: 2%;
 }
 
-button {
+.log_button {
     padding: 5px 10px 5px 10px;
-    border: 0;
     background-color: coral;
     color: whitesmoke;
+    display: block;
+    text-decoration: none;
 }
 
-button:hover {
-    box-shadow: 8px 4px 4px 0 rgb(12, 12, 12);
+.log_button:hover {
+    background-color: yellow;
+    color: black;
 }
