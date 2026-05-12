@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block title %}Informative title - sign up{% endblock %}
+
+{% block heading %}Sign up{% endblock %}
+
+{% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <form action="/" method="POST" class="signup">
+            <label for="sign_user">Username:</label>
+            <input type="text" name="sign_user" id="sign_user" placeholder="username"><br>
+            <label for="log_pass">Password:</label>
+            <input type="text" name="sign_pass" id="sign_pass" placeholder="password"><br>
+            <input type="submit" value="Sign up">
+        </form>
+        <div class="error">
+            {{ error_statement }}
+        </div>
+    </body>
+{% endblock %}
+</html>
