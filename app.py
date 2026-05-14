@@ -6,6 +6,9 @@ app = Flask(__name__)
 #If the user is signed in, username
 user = ["no", "n/a"]
 
+#Temporary dictionary - will be replaced with database
+user_ids = {"bleh": "password123"}
+
 #App Routes
 #home page
 @app.route('/')
@@ -31,17 +34,32 @@ def profile():
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
+#When user attempts to sign up:
+@app.route('/sign', methods=["POST"])
+def sign():
+    username = request.form.get("sign_user")
+    password = request.form.get("sign_pass")
+    #Checks if username already exists
+    if username in user_ids.keys():
+        error_statement = "Username is already taken."
+        return render_template('signup.html', error_statement=error_statement)
+    else:
+        #Adds account details to dictionary, logs user in, and returns to
+        #the home page if not
+        user_ids[username] = password
+        user[0] = "yes"
+        user[1] = username
+        return render_template("index.html", signin=user[0])
 
 #log in poage
 @app.route('/login')
 def login():
     return render_template('login.html')
-
+#When user attempts to log in:
 @app.route('/log', methods=["POST"])
 def log():
     username = request.form.get("log_user")
     password = request.form.get("log_pass")
-
     #Returns to log in page with error statement if username and password
     #aren't both filled in
     if not username or not password:
@@ -49,10 +67,18 @@ def log():
         return render_template("login.html", error_statement=error_statement,
                             log_user=username, log_pass=password)
     else:
-    #Logs user in and returns them to home page
-        user[0] = "yes"
-        user[1] = username
-        return render_template("index.html", signin=user[0])
+    #Checks if username and password exist
+        if username in user_ids.keys():
+            if user_ids[username] == password:
+        #Logs the user in and returns them to the home page if so
+                user[0] = "yes"
+                user[1] = username
+                return render_template("index.html", signin=user[0])
+        #Returns error statement if not
+        error_statement = "Username and password do not match"
+        return render_template("login.html", error_statement=error_statement,
+                            log_user=username, log_pass=password)
+
 
 #Logs user out and returns them to the home page   
 @app.route('/logout', methods=["POST"])

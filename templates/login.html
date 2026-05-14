@@ -24,6 +24,10 @@
         <div class="error">
             {{ error_statement }}
         </div>
+        <div class="wrong_page">
+            <h4>Don't have an account yet?</h4>
+            <a class="log_button" href="{{ url_for('signup') }}">Sign up here</a>
+        </div>
     </body>
 {% endblock %}
 </html>

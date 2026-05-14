@@ -121,3 +121,13 @@ form {
     color: firebrick;
     margin-left: 2%;
 }
+
+.wrong_page {
+    margin-left: 2%;
+    margin-top: 40px;
+    width: fit-content;
+    padding: 1px 20px 15px 20px;
+    background-color: rgb(255, 0, 212);
+    text-align: center;
+    color: yellow;
+}

@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
-        <form action="/log" method="POST" class="signup">
+        <form action="/sign" method="POST" class="signup">
             <label for="sign_user">Username:</label>
             <input type="text" name="sign_user" id="sign_user" placeholder="username"><br>
             <label for="sign_pass">Password:</label>
@@ -23,6 +23,10 @@
         </form>
         <div class="error">
             {{ error_statement }}
+        </div>
+        <div class="wrong_page">
+            <h4>Already have an account?</h4>
+            <a class="log_button" href="{{ url_for('login') }}">Log in here</a>
         </div>
     </body>
 {% endblock %}
