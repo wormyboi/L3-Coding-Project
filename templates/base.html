@@ -10,8 +10,8 @@
             <li class="navbutton">
                 <a {% block home %}class="navlink"{% endblock %} href="{{ url_for('home') }}">Home</a>
             </li>
-            <li class="navbutton" class="drop">
-                <a {% block modules %}class="navlink"{% endblock %} class="drop_button">Modules</a>
+            <li class="drop" class="navbutton">
+                <a class="drop_button" {% block modules %}class="navlink"{% endblock %}>Modules</a>
                 <div class="drop_content">
                     <a class="drop_link" href="{{ url_for('modules') }}">All Modules</a>
                     <a class="drop_link" href="{{ url_for('attempted') }}">Attempted Modules</a>
@@ -39,6 +39,7 @@
                 </div>
             </div>
         {% endif %}
+        
         {% block content %}
 
         {% endblock %}
