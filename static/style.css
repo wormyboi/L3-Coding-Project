@@ -139,3 +139,31 @@ form {
     text-align: center;
     color: yellow;
 }
+
+.quiznav {
+    float: right;
+    background-color: royalblue;
+    color: whitesmoke;
+    margin-top: 5%;
+    padding: 3px 10px 12px 10px;
+}
+
+.page_link {
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    padding: 7px;
+    border-radius: 4px;
+}
+
+.page_link:hover {
+    text-decoration: underline;
+    background-color: yellow;
+    color: magenta;
+}
+
+.page_list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}

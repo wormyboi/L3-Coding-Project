@@ -15,6 +15,15 @@ recs = ["rips", "holes", "waves"]
 #selected module
 module=["none"]
 
+#Dictionaries containing quiz / module questions
+rips_mod = {}
+rips_quiz = {
+    "1": {"variant1": "ans", "varient2": "ans", "varient3": "ans"}, 
+    "2": {"variant1": "ans", "varient2": "ans", "varient3": "ans"}
+    }
+waves_mod = {}
+waves_quiz = {}
+
 #App Routes
 #home page
 @app.route('/')
@@ -95,6 +104,11 @@ def logout():
 
 @app.route('/quiz')
 def quiz():
+    questions = {}
+    module[0] = "rips_quiz" #   REMOVE LATER!!!!!!!!!!!!!!!!!!!
+    if module[0] == "rips_quiz":
+        for num in rips_quiz.keys():
+            pos = rips_quiz[num]
     return render_template("quizbase.html", module=module[0])
 
 

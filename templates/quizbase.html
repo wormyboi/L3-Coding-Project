@@ -22,19 +22,32 @@
                         <a {% block profile %}class="navlink"{% endblock %} href="{{ url_for('profile') }}">My Profile</a>
                     </li>
                 {% else: %}
-                <li class="drop" id="profilelink">
-                    <a class="drop_button" {% block log %}class="navlink"{% endblock %}>Log in / Sign up</a>
-                    <div class="drop_content">
-                        <a class="drop_link" href="{{ url_for('login') }}">Log in</a>
-                        <a class="drop_link" href="{{ url_for('signup') }}">Sign up</a>
-                    </div>
-                </li>
+                    <li class="drop" id="profilelink">
+                        <a class="drop_button" {% block log %}class="navlink"{% endblock %}>Log in / Sign up</a>
+                        <div class="drop_content">
+                            <a class="drop_link" href="{{ url_for('login') }}">Log in</a>
+                            <a class="drop_link" href="{{ url_for('signup') }}">Sign up</a>
+                        </div>
+                    </li>
                 {% endif %}
         </ul>
-        {% endif %}
-        
         {% block content %}
 
         {% endblock %}
+        <div class="quiznav">
+            <p>Quiz Navigation</p>
+            <ul class="page_list">
+                <li>
+                    <a class="page_link">1</a>
+                </li>
+                <li>
+                    <a class="page_link">2</a>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <button>Submit</button>
+            <a>Next Page</a>
+        </div>
     </body>
 </html>
