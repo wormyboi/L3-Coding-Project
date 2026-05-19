@@ -31,9 +31,13 @@
                     </li>
                 {% endif %}
         </ul>
-        {% block content %}
+        <h1>{{ module }}</h1>
+        {% if tp == "quiz" %}
+            <h2>Question</h2>
+        {% else: %}
+            <h2>Section / page heading</h2>
+        {% endif %}
 
-        {% endblock %}
         <div class="quiznav">
             <p>Quiz Navigation</p>
             <ul class="page_list">
