@@ -9,6 +9,12 @@ user = ["no", "n/a"]
 #Temporary dictionary - will be replaced with database
 user_ids = {"bleh": "password123"}
 
+#Reccomended modules to be displayed on home page
+recs = ["rips", "holes", "waves"]
+
+#selected module
+module=["none"]
+
 #App Routes
 #home page
 @app.route('/')
@@ -86,6 +92,10 @@ def logout():
     user[0] = "no"
     user[1] = "n/a"
     return render_template("index.html", signin=user[0])
+
+@app.route('/quiz')
+def quiz():
+    return render_template("quizbase.html", module=module[0])
 
 
 #Run program

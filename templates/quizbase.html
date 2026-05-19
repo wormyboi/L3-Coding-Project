@@ -31,19 +31,6 @@
                 </li>
                 {% endif %}
         </ul>
-        <h1 class="banner">{% block heading %}Title{% endblock %}</h1>
-        {% if signin == "no" %}
-            <div class="acc_banner">
-                <h3>Log in or sign up to save your progress</h3>
-                <div class="banner_content">
-                    <p>Already have an account?</p>
-                    <a class="log_button" href="{{ url_for('login') }}">Log in</a>
-                </div>
-                <div class="banner_content">
-                    <p>New here?</p>
-                    <a class="log_button" href="{{ url_for('signup') }}">Sign up</a>
-                </div>
-            </div>
         {% endif %}
         
         {% block content %}
