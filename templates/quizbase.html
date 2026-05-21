@@ -32,8 +32,13 @@
                 {% endif %}
         </ul>
         <h1>{{ module }}</h1>
+        <p>{{ no }}</p>
         {% if tp == "quiz" %}
-            <h2>Question</h2>
+            <h2>{{ questions[no] }}</h2>
+            <form action="/quizpage" method="post">
+                <input type="hidden" id="q_num" name="q_num" value={{str(no+1)}}>
+                <input type="submit" value="submit">
+            </form>
         {% else: %}
             <h2>Section / page heading</h2>
         {% endif %}
@@ -41,12 +46,11 @@
         <div class="quiznav">
             <p>Quiz Navigation</p>
             <ul class="page_list">
+                {% for num in range(quesnum): %}
                 <li>
-                    <a class="page_link">1</a>
+                    <a class="page_link">{{ num+1 }}</a>
                 </li>
-                <li>
-                    <a class="page_link">2</a>
-                </li>
+                {% endfor %}
             </ul>
         </div>
         <div>

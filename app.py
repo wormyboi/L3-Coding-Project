@@ -16,10 +16,14 @@ recs = ["rips", "holes", "waves"]
 #selected module
 module=["none"]
 
+questions = []
+
+ans = {}
+
 #Dictionaries containing quiz / module questions
 rips_mod = {}
 rips_quiz = {
-    1: {"variant1": "ans", "varient2": "ans", "varient3": "ans"}, 
+    1: {"var1": "ans", "var2": "ans", "var3": "ans"}, 
     2: {"variant1": "ans", "varient2": "ans", "varient3": "ans"}
     }
 waves_mod = {}
@@ -107,7 +111,8 @@ def logout():
 
 @app.route('/quiz')
 def quiz():
-    questions = {}
+    questions = []
+    ans = {}
     quesnum = 0
     module[0] = "Quiz - Rips" #   REMOVE LATER!!!!!!!!!!!!!!!!!!!
     #Putting together a set of questions 
@@ -119,10 +124,17 @@ def quiz():
             for i in pos.keys():
                 pos_questions.append(i)
             q = random.choice(pos_questions)
-            questions[q] = pos[q]
+            questions.append(q)
+            ans[q] = pos[q]
             quesnum +=1
-    
-    return render_template("quizbase.html", module=module[0], questions=questions, quesnum=quesnum, tp=tp)
+    #Current question number
+    no = 0
+    return render_template("quizbase.html", module=module[0], questions=questions, ans=ans, quesnum=quesnum, tp=tp, no=no)
+
+@app.route('/quizpage', methods=["POST"])
+def quizpage():
+    no = int(request.form.get("q_num"))
+    return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans)
 
 
 #Run program
