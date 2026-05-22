@@ -36,7 +36,8 @@
         {% if tp == "quiz" %}
             <h2>{{ questions[no] }}</h2>
             <form action="/quizpage" method="post">
-                <input type="hidden" id="q_num" name="q_num" value={{str(no+1)}}>
+                <input type="hidden" id="q_num" name="q_num" value={{num}}>
+                <input type="hidden" id="act_type" name="act_type" value="submit">
                 <input type="submit" value="submit">
             </form>
         {% else: %}
@@ -53,9 +54,10 @@
                 {% endfor %}
             </ul>
         </div>
-        <div>
-            <button>Submit</button>
-            <a>Next Page</a>
-        </div>
+        <form action="/quizpage" method="post">
+            <input type="hidden" id="q_num" name="q_num" value={{num}}>
+            <input type="hidden" id="act_type" name="act_type" value="next">
+            <input type="submit" value="Next Page">
+        </form>
     </body>
 </html>

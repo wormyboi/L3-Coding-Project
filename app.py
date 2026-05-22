@@ -111,7 +111,7 @@ def logout():
 
 @app.route('/quiz')
 def quiz():
-    questions = []
+    questions.clear()
     ans = {}
     quesnum = 0
     module[0] = "Quiz - Rips" #   REMOVE LATER!!!!!!!!!!!!!!!!!!!
@@ -129,12 +129,25 @@ def quiz():
             quesnum +=1
     #Current question number
     no = 0
-    return render_template("quizbase.html", module=module[0], questions=questions, ans=ans, quesnum=quesnum, tp=tp, no=no)
+    num = "0"
+    return render_template("quizbase.html", module=module[0], questions=questions, ans=ans, quesnum=quesnum, tp=tp, no=no, num=num)
 
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
-    no = int(request.form.get("q_num"))
-    return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans)
+    quesnum = len(questions)
+    act_type = request.form.get("act_type")
+    num = request.form.get("q_num")
+    no = int(num)
+    if act_type == "next":
+        no +=1
+        num=str(no)
+    mod = module[0]
+    modu = mod.split()
+    if modu[0] == "Quiz":
+        tp = "quiz"
+    else:
+        tp = "module"
+    return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, quesnum=quesnum, num=num)
 
 
 #Run program
