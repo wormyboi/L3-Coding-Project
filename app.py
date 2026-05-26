@@ -149,6 +149,15 @@ def quizpage():
         tp = "module"
     return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, quesnum=quesnum, num=num)
 
+@app.route('/endquiz', methods=["POST"])
+def endquiz():
+    quesnum = len(questions)
+    score = 0
+    #for q in ans.keys():
+    #    if ans[q] == user_ans[q]:
+    #        score +=1
+    return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score)
+
 
 #Run program
 if __name__ == '__main__':

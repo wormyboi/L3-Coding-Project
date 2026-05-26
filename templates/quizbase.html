@@ -47,17 +47,26 @@
         <div class="quiznav">
             <p>Quiz Navigation</p>
             <ul class="page_list">
-                {% for num in range(quesnum): %}
+                {% for number in range(quesnum): %}
                 <li>
-                    <a class="page_link">{{ num+1 }}</a>
+                    <a class="page_link">{{ number+1 }}</a>
                 </li>
                 {% endfor %}
             </ul>
         </div>
-        <form action="/quizpage" method="post">
-            <input type="hidden" id="q_num" name="q_num" value={{num}}>
-            <input type="hidden" id="act_type" name="act_type" value="next">
-            <input type="submit" value="Next Page">
-        </form>
+        {% if num != quesnum: %}
+            <form action="/quizpage" method="post">
+                <input type="hidden" id="q_num" name="q_num" value={{num}}>
+                <input type="hidden" id="act_type" name="act_type" value="next">
+                <input type="submit" value="Next Page">
+            </form>
+        {% else: %}
+            <form action="/endquiz" method="post">
+                <input type="hidden" id="q_num" name="q_num" value={{num}}>
+                <input type="hidden" id="act_type" name="act_type" value="next">
+                <input type="submit" value="Next Page">
+            </form>
+        {% endif %}
+        
     </body>
 </html>
