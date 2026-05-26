@@ -20,16 +20,22 @@ questions = []
 
 ans = {}
 
-#Dictionaries containing quiz / module questions
+user_ans = {}
+user_ans_rips = {}
+
+ans_dicts = {
+    "Quiz - Rips": user_ans_rips,
+}
+
+#Dictionaries containing quiz / module questions and their answers
 rips_mod = {}
 rips_quiz = {
-    1: {"var1": "ans", "var2": "ans", "var3": "ans"}, 
-    2: {"variant1": "ans", "varient2": "ans", "varient3": "ans"}
+    1: {"var1": ["text", "ans"], "var2": ["ans"], "var3": ["ans"]}, 
+    2: {"variant1": ["correct ans1"], "varient2": ["correct ans1"], "varient3": ["correct ans3"]}
     }
 waves_mod = {}
 waves_quiz = {}
 
-user_ans = {}
 
 #App Routes
 #home page
@@ -112,7 +118,8 @@ def logout():
 @app.route('/quiz')
 def quiz():
     questions.clear()
-    ans = {}
+    user_ans.clear()
+    ans.clear()
     quesnum = 0
     module[0] = "Quiz - Rips" #   REMOVE LATER!!!!!!!!!!!!!!!!!!!
     #Putting together a set of questions 
@@ -153,9 +160,10 @@ def quizpage():
 def endquiz():
     quesnum = len(questions)
     score = 0
-    #for q in ans.keys():
-    #    if ans[q] == user_ans[q]:
-    #        score +=1
+    ans_dicts[module[0]] = user_ans
+    for q in ans.keys():
+        if ans[q] == user_ans[q]:
+            score +=1
     return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score)
 
 

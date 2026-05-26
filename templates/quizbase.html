@@ -54,7 +54,7 @@
                 {% endfor %}
             </ul>
         </div>
-        {% if num != quesnum: %}
+        {% if (no+1) != quesnum: %}
             <form action="/quizpage" method="post">
                 <input type="hidden" id="q_num" name="q_num" value={{num}}>
                 <input type="hidden" id="act_type" name="act_type" value="next">
@@ -64,7 +64,7 @@
             <form action="/endquiz" method="post">
                 <input type="hidden" id="q_num" name="q_num" value={{num}}>
                 <input type="hidden" id="act_type" name="act_type" value="next">
-                <input type="submit" value="Next Page">
+                <input type="submit" value="Finish Quiz">
             </form>
         {% endif %}
         
