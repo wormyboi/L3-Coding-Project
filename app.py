@@ -27,15 +27,23 @@ ans_dicts = {
     "Quiz - Rips": user_ans_rips,
 }
 
+
 #Dictionaries containing quiz / module questions and their answers
 rips_mod = {}
 rips_quiz = {
-    1: {"var1": ["text", "ans"], "var2": ["ans"], "var3": ["ans"]}, 
-    2: {"variant1": ["correct ans1"], "varient2": ["correct ans1"], "varient3": ["correct ans3"]}
+    1: {
+        "var1": ["text", "ans"], "var2": ["text", "ans"], "var3": ["text", "ans"]
+        }, 
+    2: {
+        "variant1": ["radio", "correct ans1", "incorrect ans", "wrong ans"], 
+        "varient2": ["radio", "correct ans1", "not-right ans"], 
+        "varient3": ["radio", "correct ans3", "incorrect", "wrong", "very wrong"]
+        },
     }
 waves_mod = {}
 waves_quiz = {}
-
+#contains innermost lists from above dictionaries for selected questions
+var_info = []
 
 #App Routes
 #home page
@@ -120,6 +128,8 @@ def quiz():
     questions.clear()
     user_ans.clear()
     ans.clear()
+    var_info.clear()
+    opt = []
     quesnum = 0
     module[0] = "Quiz - Rips" #   REMOVE LATER!!!!!!!!!!!!!!!!!!!
     #Putting together a set of questions 
@@ -132,15 +142,23 @@ def quiz():
                 pos_questions.append(i)
             q = random.choice(pos_questions)
             questions.append(q)
-            ans[q] = pos[q]
+            var_info.append(pos[q])
+            var_list = var_info[quesnum]
+            ans[q] = var_list[1]
             quesnum +=1
     #Current question number
     no = 0
     num = "0"
-    return render_template("quizbase.html", module=module[0], questions=questions, ans=ans, quesnum=quesnum, tp=tp, no=no, num=num)
+    var_list = var_info[no]
+    if var_list[0] != "text":
+        for optn in var_list:
+            if optn != var_list[0]:
+                opt.append(optn)
+    return render_template("quizbase.html", module=module[0], questions=questions, ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, var_list=var_list, opt=opt, signin=user[0])
 
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
+    opt = []
     quesnum = len(questions)
     act_type = request.form.get("act_type")
     num = request.form.get("q_num")
@@ -154,7 +172,12 @@ def quizpage():
         tp = "quiz"
     else:
         tp = "module"
-    return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, quesnum=quesnum, num=num)
+    var_list = var_info[no]
+    if var_list[0] != "text":
+        for optn in var_list:
+            if optn != var_list[0]:
+                opt.append(optn)
+    return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0])
 
 @app.route('/endquiz', methods=["POST"])
 def endquiz():

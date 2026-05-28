@@ -36,6 +36,14 @@
         {% if tp == "quiz" %}
             <h2>{{ questions[no] }}</h2>
             <form action="/quizpage" method="post">
+                {% if var_list[0]=="text": %}
+                    <input type="text" name="u_ans"><br>
+                {% elif var_list[0]=="radio" or var_list[0]=="checkbox": %}
+                    {% for optn in opt: %}
+                        <input type={{var_list[0]}} name="u_ans" value={{optn}} id={{optn}}><br>
+                    {% endfor %}
+                {% endif %}
+                <input type="hidden" id="q_type" name="q_type" value={{var_list[0]}}>
                 <input type="hidden" id="q_num" name="q_num" value={{num}}>
                 <input type="hidden" id="act_type" name="act_type" value="submit">
                 <input type="submit" value="submit">
