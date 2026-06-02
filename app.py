@@ -159,6 +159,7 @@ def quiz():
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
     opt = []
+    #setting up local variables again
     quesnum = len(questions)
     act_type = request.form.get("act_type")
     num = request.form.get("q_num")
@@ -177,16 +178,29 @@ def quizpage():
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
-    return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0])
+    #Goes back to quizbase webpage with a message checking the user is ready 
+    #to submit their attempt if they click 'finish quiz'
+    if act_type == "check":
+        if len(user_ans) < len(ans):
+            error_message = "Are you sure you want to finish this attempt?\nSome questions are unanswered"
+            return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
+                                module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt)
+        else:
+            error_message = "Are you sure you want to finish this attempt?"
+            return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
+                                module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt)
+    #Sends user back to quizbase, either with the next question or their answers checked
+    else:
+        return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0])
 
 @app.route('/endquiz', methods=["POST"])
 def endquiz():
     quesnum = len(questions)
     score = 0
-    ans_dicts[module[0]] = user_ans
-    for q in ans.keys():
-        if ans[q] == user_ans[q]:
-            score +=1
+    #ans_dicts[module[0]] = user_ans
+    #for q in ans.keys():
+    #    if ans[q] == user_ans[q]:
+    #        score +=1
     return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score)
 
 
