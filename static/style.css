@@ -141,15 +141,16 @@ form {
 }
 
 .quiznav {
-    float: right;
+    right: 2%;
+    top: 150px;
     background-color: royalblue;
     color: whitesmoke;
     margin-top: 5%;
     padding: 3px 10px 12px 10px;
+    position: absolute;
 }
 
 .page_link {
-    text-decoration: none;
     display: inline-block;
     text-align: center;
     padding: 7px;
@@ -188,4 +189,8 @@ form {
 .errorbutton {
     float: left;
     z-index: 9999;
+}
+
+.errormsg {
+    color: darkred;
 }

@@ -31,8 +31,8 @@
                     </li>
                 {% endif %}
         </ul>
+        
         <h1>{{ module }}</h1>
-        <p>{{ no }}</p>
         {% if tp == "quiz" %}
             <h2>{{ questions[no] }}</h2>
             <form action="/quizpage" method="post">
@@ -40,7 +40,8 @@
                     <input type="text" name="u_ans"><br>
                 {% elif var_list[0]=="radio" or var_list[0]=="checkbox": %}
                     {% for optn in opt: %}
-                        <input type={{var_list[0]}} name="u_ans" value={{optn}} id={{optn}}><br>
+                        <input type={{var_list[0]}} name="u_ans" value={{optn}} id={{optn}}>
+                        <label for={{optn}}>{{ optn }}</label><br>
                     {% endfor %}
                 {% endif %}
                 <input type="hidden" id="q_type" name="q_type" value={{var_list[0]}}>
@@ -48,6 +49,9 @@
                 <input type="hidden" id="act_type" name="act_type" value="submit">
                 <input type="submit" value="submit">
             </form>
+            {% if msg != "none": %}
+                <p class={{msgtype}}>{{ msg }}</p>
+            {% endif %}
         {% else: %}
             <h2>Section / page heading</h2>
         {% endif %}
@@ -57,7 +61,11 @@
             <ul class="page_list">
                 {% for number in range(quesnum): %}
                 <li>
-                    <a class="page_link">{{ number+1 }}</a>
+                    <form action="/quizpage" method="post">
+                        <input type="hidden" name="q_num" value={{number-1}}>
+                        <input type="hidden" name="act_type" value="next">
+                        <input type="submit" class="page_link" value={{number+1}}>
+                    </form>
                 </li>
                 {% endfor %}
             </ul>

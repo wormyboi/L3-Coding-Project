@@ -39,9 +39,15 @@ rips_quiz = {
         "varient2": ["radio", "correct ans1", "not-right ans"], 
         "varient3": ["radio", "correct ans3", "incorrect", "wrong", "very wrong"]
         },
+    3: {
+        "Var 1": ["checkbox", "ans", "not-ans", "v-not-ans"],
+        "Var 2": ["checkbox", "right", "wrong", "not this one"]
+        },
     }
 waves_mod = {}
 waves_quiz = {}
+holes_mod = {}
+holes_quiz = {}
 #contains innermost lists from above dictionaries for selected questions
 var_info = []
 
@@ -163,10 +169,21 @@ def quizpage():
     quesnum = len(questions)
     act_type = request.form.get("act_type")
     num = request.form.get("q_num")
+    u_ans = request.form.get("u_ans")
     no = int(num)
     if act_type == "next":
         no +=1
         num=str(no)
+    elif act_type == "submit":
+        if u_ans:
+            q = questions[no]
+            user_ans[q] = u_ans
+            if ans[q] == u_ans:
+                msg = "Correct answer! Good job!"
+                msgtype = "msg"
+        else:
+            msgtype = "errormsg"
+            msg = "Please enter an answer"
     mod = module[0]
     modu = mod.split()
     if modu[0] == "Quiz":
@@ -178,6 +195,9 @@ def quizpage():
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
+    if not msg:
+        msg = "none"
+        msgtype = "none"
     #Goes back to quizbase webpage with a message checking the user is ready 
     #to submit their attempt if they click 'finish quiz'
     if act_type == "check":
@@ -191,7 +211,8 @@ def quizpage():
                                 module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt)
     #Sends user back to quizbase, either with the next question or their answers checked
     else:
-        return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0])
+        return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, 
+                               quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0], msg=msg, msgtype=msgtype)
 
 @app.route('/endquiz', methods=["POST"])
 def endquiz():
