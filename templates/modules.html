@@ -16,7 +16,10 @@
     <body>
         <h3>All Modules</h3>
         <h3>Quizzes</h3>
-        <a href="{{ url_for('quiz') }}">rips</a>
+        <form action="/quiz" method="post">
+            <input type="hidden" name="act" value="Quiz - Rips">
+            <input type="submit" value="rips">
+        </form>
     </body>
 {% endblock %}
 </html>

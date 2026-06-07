@@ -32,16 +32,16 @@ ans_dicts = {
 rips_mod = {}
 rips_quiz = {
     1: {
-        "var1": ["text", "ans"], "var2": ["text", "ans"], "var3": ["text", "ans"]
+        "var1": ["text", "'ans'"], "var2": ["text", "'ans'"], "var3": ["text", "'ans'"]
         }, 
     2: {
-        "variant1": ["radio", "correct ans1", "incorrect ans", "wrong ans"], 
-        "varient2": ["radio", "correct ans1", "not-right ans"], 
-        "varient3": ["radio", "correct ans3", "incorrect", "wrong", "very wrong"]
+        "variant1": ["radio", "'correct ans'", "'incorrect ans'", "'wrong ans'"], 
+        "varient2": ["radio", "'correct ans2'", "'not-right ans'"], 
+        "varient3": ["radio", "'correct ans3'", "'incorrect'", "'wrong'", "'very wrong'"]
         },
     3: {
-        "Var 1": ["checkbox", "ans", "not-ans", "v-not-ans"],
-        "Var 2": ["checkbox", "right", "wrong", "not this one"]
+        "Var 1": ["checkbox", "'ans'", "'not-ans'", "'v-not-ans'"],
+        "Var 2": ["checkbox", "'right'", "'wrong'", "'not this one'"]
         },
     }
 waves_mod = {}
@@ -129,7 +129,7 @@ def logout():
     user[1] = "n/a"
     return render_template("index.html", signin=user[0])
 
-@app.route('/quiz')
+@app.route('/quiz', methods=["POST"])
 def quiz():
     questions.clear()
     user_ans.clear()
@@ -137,8 +137,7 @@ def quiz():
     var_info.clear()
     opt = []
     quesnum = 0
-    module[0] = "Quiz - Rips" #   REMOVE LATER!!!!!!!!!!!!!!!!!!!
-    #Putting together a set of questions 
+    module[0] = request.form.get("act")
     if module[0] == "Quiz - Rips":
         tp = "quiz"
         for num in rips_quiz.keys():
@@ -160,7 +159,9 @@ def quiz():
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
-    return render_template("quizbase.html", module=module[0], questions=questions, ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, var_list=var_list, opt=opt, signin=user[0])
+    return render_template("quizbase.html", module=module[0], questions=questions,
+                            ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
+                            var_list=var_list, opt=opt, signin=user[0])
 
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
@@ -171,6 +172,8 @@ def quizpage():
     num = request.form.get("q_num")
     u_ans = request.form.get("u_ans")
     no = int(num)
+    msg = False
+    msgtype = "none"
     if act_type == "next":
         no +=1
         num=str(no)
@@ -195,9 +198,6 @@ def quizpage():
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
-    if not msg:
-        msg = "none"
-        msgtype = "none"
     #Goes back to quizbase webpage with a message checking the user is ready 
     #to submit their attempt if they click 'finish quiz'
     if act_type == "check":
