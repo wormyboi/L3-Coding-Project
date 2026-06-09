@@ -37,10 +37,10 @@
             <h2>{{ questions[no] }}</h2>
             <form action="/quizpage" method="post">
                 {% if var_list[0]=="text": %}
-                    <input type="text" name="u_ans" {{ q_lock }}><br>
+                    <input type="text" name="u_ans" value="{{ q_ans }}" {{ q_lock }}><br>
                 {% elif var_list[0]=="radio" or var_list[0]=="checkbox": %}
                     {% for optn in opt: %}
-                        <input type="{{var_list[0]}}" name="u_ans" value="{{optn}}" {{ q_lock }}>
+                        <input type="{{var_list[0]}}" name="u_ans" value="{{optn}}" {{ checked[optn] }} {{ q_lock }}>
                         <label for="{{optn}}">{{ optn }}</label><br>
                     {% endfor %}
                 {% endif %}

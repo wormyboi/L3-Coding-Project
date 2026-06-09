@@ -47,7 +47,26 @@ rips_quiz = {
         },
     }
 waves_mod = {}
-waves_quiz = {}
+waves_quiz = {
+    1: {
+        "question1": ["radio", "answer that is right", "answer that isn't", "other answer that isn't"],
+        "question1 the 2nd": ["radio", "This one's right", "something false abt waves", "idk anymore"],
+        "question1 the 3rd": ["radio", "correct ans", "aaaaa", "definitely wrong ans"]
+    },
+    2: {
+        "the second wave question": ["text", "ans"], 
+        "the second second wave question": ["text", "ans"],
+        "the second second second wave question": ["text", "ans"]
+    },
+    3: {
+        "wave q the 3rd": ["radio", "definetly correct ans", "100% wrong ans", "don't click this one if u want to be right"],
+        "wave q the 3rd the 2nd": ["radio", "right", "not right"]
+    },
+    4: {
+        "meooow": ["text", "wawawawa"],
+        "wawawawa": ["text", "similar"]
+    },
+}
 holes_mod = {}
 holes_quiz = {}
 #contains innermost lists from above dictionaries for selected questions
@@ -140,11 +159,38 @@ def quiz():
     var_info.clear()
     opt = []
     quesnum = 0
+    #Setting up question sets for selected module / quiz
     module[0] = request.form.get("act")
     if module[0] == "Quiz - Rips":
         tp = "quiz"
         for num in rips_quiz.keys():
             pos = rips_quiz[num]
+            pos_questions = []
+            for i in pos.keys():
+                pos_questions.append(i)
+            q = random.choice(pos_questions)
+            questions.append(q)
+            var_info.append(pos[q])
+            var_list = var_info[quesnum]
+            ans[q] = var_list[1]
+            quesnum +=1
+    elif module[0] == "Quiz - Holes":
+        tp = "quiz"
+        for num in holes_quiz.keys():
+            pos = holes_quiz[num]
+            pos_questions = []
+            for i in pos.keys():
+                pos_questions.append(i)
+            q = random.choice(pos_questions)
+            questions.append(q)
+            var_info.append(pos[q])
+            var_list = var_info[quesnum]
+            ans[q] = var_list[1]
+            quesnum +=1
+    elif module[0] == "Quiz - Waves":
+        tp = "quiz"
+        for num in waves_quiz.keys():
+            pos = waves_quiz[num]
             pos_questions = []
             for i in pos.keys():
                 pos_questions.append(i)
@@ -169,6 +215,7 @@ def quiz():
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
     opt = []
+    checked = {}
     #setting up local variables again
     quesnum = len(questions)
     act_type = request.form.get("act_type")
@@ -176,9 +223,9 @@ def quizpage():
     u_ans = request.form.get("u_ans")
     no = int(num)
     if no not in q_lock.keys():
-        q_lock[no] = False
+        q_lock[no] = ""
     if (no+1) not in q_lock.keys():
-        q_lock[no+1] = False
+        q_lock[no+1] = ""
     #initially setting up as though there are no messages
     msg = False
     msgtype = "none"
@@ -205,14 +252,14 @@ def quizpage():
     if questions[no] in user_ans.keys():
         q = questions[no]
         q_ans = user_ans[q]
-        if q_ans == user_ans[q]:
+        if user_ans[q] == ans[q]:
             msg = "Correct answer! Good job!"
             msgtype = "msg"
         else:
             msg = "Incorrect"
             msgtype = "errormsg"
     else:
-        q_ans = False
+        q_ans = ""
     #Setting var_list to the list of information for the question that's
     #going to be displayed and setting up a list of options if necessary
     var_list = var_info[no]
@@ -220,6 +267,10 @@ def quizpage():
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
+                if q_ans == optn:
+                    checked[optn] = "checked"
+                else:
+                    checked[optn] = ""
     #Goes back to quizbase webpage with a message checking the user is ready 
     #to submit their attempt if they click 'finish quiz'
     if act_type == "check":
@@ -227,22 +278,25 @@ def quizpage():
             error_message = "Are you sure you want to finish this attempt?\nSome questions are unanswered"
             return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
                                 module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt,
-                                q_lock=q_lock[no], q_ans=q_ans)
+                                q_lock=q_lock[no], q_ans=q_ans, checked=checked)
         else:
             error_message = "Are you sure you want to finish this attempt?"
             return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
                                 module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt,
-                                q_lock=q_lock[no], q_ans=q_ans)
+                                q_lock=q_lock[no], q_ans=q_ans, checked=checked)
     #Sends user back to quizbase, either with the next question or their answers checked
     else:
         return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, 
                                quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0], msg=msg, msgtype=msgtype,
-                               q_lock=q_lock[no], q_ans=q_ans)
+                               q_lock=q_lock[no], q_ans=q_ans, checked=checked)
 
 @app.route('/endquiz', methods=["POST"])
 def endquiz():
     quesnum = len(questions)
     score = 0
+    for q in questions:
+        if q not in user_ans.keys():
+            user_ans[q] = ""
     ans_dicts[module[0]] = user_ans
     for q in ans.keys():
         if ans[q] == user_ans[q]:
