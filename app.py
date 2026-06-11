@@ -21,11 +21,20 @@ questions = []
 ans = {}
 
 user_ans = {}
-user_ans_rips = {}
+high_scores = {"rips": 0, "holes": 0, "waves": 0}
 
+#contain user answers for attempts currently in progress
+user_ans_rips = {}
+user_ans_holes = {}
+user_ans_waves = {}
+user_ans_ripsmod = {}
+user_ans_holesmod = {}
+user_ans_wavesmod = {}
 ans_dicts = {
-    "Quiz - Rips": user_ans_rips,
-}
+    "Quiz - Rips": user_ans_rips, "Quiz - Waves": user_ans_waves, "Quiz - Holes": user_ans_holes,
+    "Rips": user_ans_ripsmod, "Waves": user_ans_wavesmod, "Holes": user_ans_holesmod
+    }
+
  #which questions are no longer able to be answered
 q_lock = {}
 
@@ -63,12 +72,25 @@ waves_quiz = {
         "wave q the 3rd the 2nd": ["radio", "right", "not right"]
     },
     4: {
-        "meooow": ["text", "wawawawa"],
+        "MEEeowwwwww": ["text", "doppler"],
         "wawawawa": ["text", "similar"]
     },
 }
 holes_mod = {}
-holes_quiz = {}
+holes_quiz = {
+    1: {
+        "holes q goes here": ["checkbox", "right", "wrong"],
+        "holes q goes here too": ["checkbox", "right", "not right", "I'm so tired"],
+        "holes q also goes here": ["checkbox", "correct", "incorrect", "aaaaaa"]
+    },
+    2: {
+        "yipee! last placeholder q": ["text", "ans"],
+        "last last placeholder q": ["text", "ans"],
+        "last placeholder q the final season": ["text", "ans"],
+        "last placeholder q the final season the finale (real, not clickbait)": ["radio", "I belive you!", "theres more isn't there !",
+                                                                                  "you lack credibilty", "I don't know what to believe anymore"],
+    },
+}
 #contains innermost lists from above dictionaries for selected questions
 var_info = []
 
@@ -158,6 +180,7 @@ def quiz():
     ans.clear()
     var_info.clear()
     opt = []
+    checked = {}
     quesnum = 0
     #Setting up question sets for selected module / quiz
     module[0] = request.form.get("act")
@@ -208,9 +231,11 @@ def quiz():
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
+                checked[optn] = ""
+        random.shuffle(opt)
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
-                            var_list=var_list, opt=opt, signin=user[0])
+                            var_list=var_list, opt=opt, signin=user[0], checked=checked)
 
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
@@ -271,6 +296,7 @@ def quizpage():
                     checked[optn] = "checked"
                 else:
                     checked[optn] = ""
+        random.shuffle(opt)
     #Goes back to quizbase webpage with a message checking the user is ready 
     #to submit their attempt if they click 'finish quiz'
     if act_type == "check":
@@ -297,11 +323,19 @@ def endquiz():
     for q in questions:
         if q not in user_ans.keys():
             user_ans[q] = ""
-    ans_dicts[module[0]] = user_ans
     for q in ans.keys():
         if ans[q] == user_ans[q]:
             score +=1
+    mod = module[0].split
+    if mod[0] == "Quiz":
+        modu = mod[2].lower()
+        if score > high_scores[modu]:
+            high_scores[modu] = score
     return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score)
+
+@app.route('/exit', methods=["POST"])
+def exit():
+    return render_template("modules.html", signin=user[0])
 
 
 #Run program
