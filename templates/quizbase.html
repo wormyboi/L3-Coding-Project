@@ -102,6 +102,7 @@
         {% endif %}
 
         <form action="/exit" method="post">
+            <input type="hidden" name="q_num" value="{{num}}">
             <input type="submit" value="Save and Exit">
         </form>
     </body>

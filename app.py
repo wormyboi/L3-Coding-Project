@@ -30,9 +30,17 @@ user_ans_waves = {}
 user_ans_ripsmod = {}
 user_ans_holesmod = {}
 user_ans_wavesmod = {}
+#contains question sets for attempts currently in progress
+qset_rips = []
+qset_holes = []
+qset_waves = []
+qset_ripsmod = []
+qset_holesmod = []
+qset_wavesmod = []
 ans_dicts = {
-    "Quiz - Rips": user_ans_rips, "Quiz - Waves": user_ans_waves, "Quiz - Holes": user_ans_holes,
-    "Rips": user_ans_ripsmod, "Waves": user_ans_wavesmod, "Holes": user_ans_holesmod
+    "Quiz - Rips": [user_ans_rips, qset_rips, 0], "Quiz - Waves": [user_ans_waves, qset_waves, 0], 
+    "Quiz - Holes": [user_ans_holes, qset_holes, 0], "Rips": [user_ans_ripsmod, qset_ripsmod, 0], 
+    "Waves": [user_ans_wavesmod, qset_wavesmod, 0], "Holes": [user_ans_holesmod, qset_holesmod, 0]
     }
 
  #which questions are no longer able to be answered
@@ -184,48 +192,80 @@ def quiz():
     quesnum = 0
     #Setting up question sets for selected module / quiz
     module[0] = request.form.get("act")
-    if module[0] == "Quiz - Rips":
-        tp = "quiz"
-        for num in rips_quiz.keys():
-            pos = rips_quiz[num]
-            pos_questions = []
-            for i in pos.keys():
-                pos_questions.append(i)
-            q = random.choice(pos_questions)
-            questions.append(q)
-            var_info.append(pos[q])
-            var_list = var_info[quesnum]
-            ans[q] = var_list[1]
-            quesnum +=1
-    elif module[0] == "Quiz - Holes":
-        tp = "quiz"
-        for num in holes_quiz.keys():
-            pos = holes_quiz[num]
-            pos_questions = []
-            for i in pos.keys():
-                pos_questions.append(i)
-            q = random.choice(pos_questions)
-            questions.append(q)
-            var_info.append(pos[q])
-            var_list = var_info[quesnum]
-            ans[q] = var_list[1]
-            quesnum +=1
-    elif module[0] == "Quiz - Waves":
-        tp = "quiz"
-        for num in waves_quiz.keys():
-            pos = waves_quiz[num]
-            pos_questions = []
-            for i in pos.keys():
-                pos_questions.append(i)
-            q = random.choice(pos_questions)
-            questions.append(q)
-            var_info.append(pos[q])
-            var_list = var_info[quesnum]
-            ans[q] = var_list[1]
-            quesnum +=1
-    #Current question number
-    no = 0
-    num = "0"
+    attempt = ans_dicts[module[0]]
+    #continuing an attempt
+    if len(attempt[1]) >= 1:
+        questions = attempt[1]
+        user_ans = attempt[0]
+        no = attempt[2]
+        if module[0] == "Quiz - Rips":
+            tp = "quiz"
+            for num in rips_quiz.keys():
+                pos = rips_quiz[num]
+                var_info.append(pos[questions[quesnum]])
+                var_list = var_info[quesnum]
+                ans[questions[num-1]] = var_list[1]
+                quesnum +=1
+        elif module[0] == "Quiz - Holes":
+            tp = "quiz"
+            for num in holes_quiz.keys():
+                pos = holes_quiz[num]
+                var_info.append(pos[questions[num-1]])
+                var_list = var_info[quesnum]
+                ans[questions[num-1]] = var_list[1]
+                quesnum += 1
+        elif module[0] == "Quiz - Waves":
+            tp = "quiz"
+            for num in waves_quiz.keys():
+                pos = waves_quiz[num]
+                var_info.append(pos[questions[num-1]])
+                var_list = var_info[quesnum]
+                ans[questions[num-1]] = var_list[1]
+                quesnum += 1
+    #starting a new attempt
+    else:
+        if module[0] == "Quiz - Rips":
+            tp = "quiz"
+            for num in rips_quiz.keys():
+                pos = rips_quiz[num]
+                pos_questions = []
+                for i in pos.keys():
+                    pos_questions.append(i)
+                q = random.choice(pos_questions)
+                questions.append(q)
+                var_info.append(pos[q])
+                var_list = var_info[quesnum]
+                ans[q] = var_list[1]
+                quesnum +=1
+        elif module[0] == "Quiz - Holes":
+            tp = "quiz"
+            for num in holes_quiz.keys():
+                pos = holes_quiz[num]
+                pos_questions = []
+                for i in pos.keys():
+                    pos_questions.append(i)
+                q = random.choice(pos_questions)
+                questions.append(q)
+                var_info.append(pos[q])
+                var_list = var_info[quesnum]
+                ans[q] = var_list[1]
+                quesnum +=1
+        elif module[0] == "Quiz - Waves":
+            tp = "quiz"
+            for num in waves_quiz.keys():
+                pos = waves_quiz[num]
+                pos_questions = []
+                for i in pos.keys():
+                    pos_questions.append(i)
+                q = random.choice(pos_questions)
+                questions.append(q)
+                var_info.append(pos[q])
+                var_list = var_info[quesnum]
+                ans[q] = var_list[1]
+                quesnum +=1
+        #Current question number
+        no = 0
+    num = str(no)
     var_list = var_info[no]
     if var_list[0] != "text":
         for optn in var_list:
@@ -233,9 +273,12 @@ def quiz():
                 opt.append(optn)
                 checked[optn] = ""
         random.shuffle(opt)
+    if no not in q_lock.keys():
+        q_lock[no] = ""
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
-                            var_list=var_list, opt=opt, signin=user[0], checked=checked)
+                            var_list=var_list, opt=opt, signin=user[0], checked=checked,
+                            q_lock=q_lock[no])
 
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
@@ -318,6 +361,10 @@ def quizpage():
 
 @app.route('/endquiz', methods=["POST"])
 def endquiz():
+    attempt = ans_dicts[module[0]]
+    for num in attempt:
+        attempt[num].clear()
+    ans_dicts[module[0]] = attempt
     quesnum = len(questions)
     score = 0
     for q in questions:
@@ -335,6 +382,13 @@ def endquiz():
 
 @app.route('/exit', methods=["POST"])
 def exit():
+    num = request.form.get("q_num")
+    attempt = ans_dicts[module[0]]
+    attempt[0] = user_ans
+    attempt[1] = questions
+    attempt[2] = int(num)
+    ans_dicts[module[0]] = attempt
+    print(ans_dicts)
     return render_template("modules.html", signin=user[0])
 
 
