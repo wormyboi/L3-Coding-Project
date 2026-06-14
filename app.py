@@ -195,32 +195,35 @@ def quiz():
     attempt = ans_dicts[module[0]]
     #continuing an attempt
     if len(attempt[1]) >= 1:
-        questions = attempt[1]
-        user_ans = attempt[0]
         no = attempt[2]
+        for q in attempt[1]:
+            questions.append(q)
+        prev_ans = attempt[0]
+        for q in prev_ans.keys():
+            user_ans[q] = prev_ans[q]
         if module[0] == "Quiz - Rips":
             tp = "quiz"
             for num in rips_quiz.keys():
                 pos = rips_quiz[num]
                 var_info.append(pos[questions[quesnum]])
                 var_list = var_info[quesnum]
-                ans[questions[num-1]] = var_list[1]
+                ans[questions[quesnum]] = var_list[1]
                 quesnum +=1
         elif module[0] == "Quiz - Holes":
             tp = "quiz"
             for num in holes_quiz.keys():
                 pos = holes_quiz[num]
-                var_info.append(pos[questions[num-1]])
+                var_info.append(pos[questions[quesnum]])
                 var_list = var_info[quesnum]
-                ans[questions[num-1]] = var_list[1]
+                ans[questions[quesnum]] = var_list[1]
                 quesnum += 1
         elif module[0] == "Quiz - Waves":
             tp = "quiz"
             for num in waves_quiz.keys():
                 pos = waves_quiz[num]
-                var_info.append(pos[questions[num-1]])
+                var_info.append(pos[questions[quesnum]])
                 var_list = var_info[quesnum]
-                ans[questions[num-1]] = var_list[1]
+                ans[questions[quesnum]] = var_list[1]
                 quesnum += 1
     #starting a new attempt
     else:

@@ -31,10 +31,16 @@
                     </li>
                 {% endif %}
         </ul>
-        
+        <!-- exit button -->
+        <form action="/exit" method="post">
+            <input type="hidden" name="q_num" value="{{num}}">
+            <input type="submit" value="Save and Exit">
+        </form>
         <h1>{{ module }}</h1>
+        <!-- if the user is completing a quiz -->
         {% if tp == "quiz" %}
             <h2>{{ questions[no] }}</h2>
+            <!-- inputs to answer current question-->
             <form action="/quizpage" method="post">
                 {% if var_list[0]=="text": %}
                     <input type="text" name="u_ans" value="{{ q_ans }}" {{ q_lock }}><br>
@@ -44,6 +50,7 @@
                         <label for="{{optn}}">{{ optn }}</label><br>
                     {% endfor %}
                 {% endif %}
+                <!-- local variables to be carried over to next question-->
                 <input type="hidden" id="q_type" name="q_type" value="{{var_list[0]}}">
                 <input type="hidden" id="q_num" name="q_num" value="{{num}}">
                 <input type="hidden" id="act_type" name="act_type" value="submit">
@@ -52,10 +59,11 @@
             {% if msg: %}
                 <p class="{{msgtype}}">{{ msg }}</p>
             {% endif %}
+        <!-- If the user is completing a module -->
         {% else: %}
             <h2>Section / page heading</h2>
         {% endif %}
-
+        <!-- Navigation menu - allows user to move to any question number -->
         <div class="quiznav">
             <p>Quiz Navigation</p>
             <ul class="page_list">
@@ -70,6 +78,7 @@
                 {% endfor %}
             </ul>
         </div>
+        <!-- Checks the user is ready to finish their attempt if they click 'finish quiz'-->
         {% if error_message: %}
             <div class="grey">
                 <div class="errorbox">
@@ -85,13 +94,16 @@
                     </form>
                 </div>
             </div>
+        <!-- If they haven't just clicked 'finish attempt': -->
         {% else: %}
+            <!-- If this isn't the last question, display form leading to the next page -->
             {% if (no+1) != quesnum: %}
                 <form action="/quizpage" method="post">
                     <input type="hidden" id="q_num" name="q_num" value={{num}}>
                     <input type="hidden" id="act_type" name="act_type" value="next">
                     <input type="submit" value="Next Page">
                 </form>
+            <!-- If this is the last question, display 'finish attempt' form-->
             {% else: %}
                 <form action="/quizpage" method="post">
                     <input type="hidden" id="q_num" name="q_num" value={{num}}>
@@ -101,9 +113,5 @@
             {% endif %}
         {% endif %}
 
-        <form action="/exit" method="post">
-            <input type="hidden" name="q_num" value="{{num}}">
-            <input type="submit" value="Save and Exit">
-        </form>
     </body>
 </html>

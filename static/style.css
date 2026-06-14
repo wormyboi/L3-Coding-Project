@@ -135,9 +135,9 @@ form {
     margin-top: 40px;
     width: fit-content;
     padding: 1px 20px 15px 20px;
-    background-color: rgb(255, 0, 212);
+    background-color: whitesmoke;
     text-align: center;
-    color: yellow;
+    color: black;
 }
 
 .quiznav {
