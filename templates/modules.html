@@ -16,17 +16,18 @@
     <body>
         <h3>All Modules</h3>
         <h3>Quizzes</h3>
-        <form action="/quiz" method="post">
+        <form action="/quiz" method="post" class="modcard">
+            <img src="{{ url_for('static', filename='temp_ripcard.jpg') }}">
             <input type="hidden" name="act" value="Quiz - Rips">
-            <input type="submit" value="rips">
+            <input type="submit" value="rips" class="modlink">
         </form>
-        <form action="/quiz" method="post">
+        <form action="/quiz" method="post" class="modcard">
             <input type="hidden" name="act" value="Quiz - Waves">
-            <input type="submit" value="waves">
+            <input type="submit" value="waves" class="modlink">
         </form>
-        <form action="/quiz" method="post">
+        <form action="/quiz" method="post" class="modcard">
             <input type="hidden" name="act" value="Quiz - Holes">
-            <input type="submit" value="holes">
+            <input type="submit" value="holes" class="modlink">
         </form>
     </body>
 {% endblock %}

@@ -113,7 +113,6 @@ def home():
 #all modules page
 @app.route('/modules')
 def modules():
-    print(ans_dicts)
     return render_template('modules.html', signin=user[0])
 
 #attempted modules page
@@ -185,7 +184,7 @@ def logout():
 
 @app.route('/quiz', methods=["POST"])
 def quiz():
-    print(ans_dicts)
+    q_ans = ""
     q_lock.clear()
     questions.clear()
     user_ans.clear()
@@ -194,13 +193,9 @@ def quiz():
     opt = []
     checked = {}
     quesnum = 0
-    print(ans_dicts)
     #Setting up question sets for selected module / quiz
     module[0] = request.form.get("act")
     attempt = ans_dicts[module[0]]
-    print(module[0])
-    print(ans_dicts)
-    print(ans_dicts[module[0]])
     #continuing an attempt
     if len(attempt[1]) >= 1:
         no = attempt[2]
@@ -217,6 +212,8 @@ def quiz():
                     var_info.append(pos[questions[quesnum]])
                     var_list = var_info[quesnum]
                     ans[questions[quesnum]] = var_list[1]
+                    if questions[quesnum] in user_ans.keys():
+                        q_lock[quesnum] = "disabled"
                     quesnum +=1
             elif module[0] == "Quiz - Holes":
                 tp = "quiz"
@@ -225,6 +222,8 @@ def quiz():
                     var_info.append(pos[questions[quesnum]])
                     var_list = var_info[quesnum]
                     ans[questions[quesnum]] = var_list[1]
+                    if questions[quesnum] in user_ans.keys():
+                        q_lock[quesnum] = "disabled"
                     quesnum += 1
             elif module[0] == "Quiz - Waves":
                 tp = "quiz"
@@ -233,9 +232,12 @@ def quiz():
                     var_info.append(pos[questions[quesnum]])
                     var_list = var_info[quesnum]
                     ans[questions[quesnum]] = var_list[1]
+                    if questions[quesnum] in user_ans.keys():
+                        q_lock[quesnum] = "disabled"
                     quesnum += 1
     #starting a new attempt
     else:
+        #Puts together a question set for the relevant quiz / module
         if module[0] == "Quiz - Rips":
             tp = "quiz"
             for num in rips_quiz.keys():
@@ -275,22 +277,34 @@ def quiz():
                 var_list = var_info[quesnum]
                 ans[q] = var_list[1]
                 quesnum +=1
-        #Current question number
         no = 0
     num = str(no)
     var_list = var_info[no]
+    #If the question has a radio or checkbox input, sets up a list of options.
     if var_list[0] != "text":
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
-                checked[optn] = ""
+                if questions[no] in user_ans.keys():
+                    if user_ans[questions[no]] == optn:
+                        checked[optn] = "checked"
+                    else:
+                        checked[optn] = ""
+                else:
+                    checked[optn] = ""
         random.shuffle(opt)
+    #If the question has a text input, checks if it's already been answered
+    #and sets the answer as a placeholder if so.
+    else:
+        if questions[no] in user_ans.keys():
+            q_ans = user_ans[questions[no]]
     if no not in q_lock.keys():
         q_lock[no] = ""
+    #Renders 1st / current question (depending on whether an attempt's in progress)
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
                             var_list=var_list, opt=opt, signin=user[0], checked=checked,
-                            q_lock=q_lock[no])
+                            q_lock=q_lock[no], q_ans=q_ans)
 
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
@@ -376,7 +390,7 @@ def endquiz():
     attempt = ans_dicts[module[0]]
     dex = 0
     for num in attempt:
-        if type(num) == list or type(num == dict):
+        if type(num) == list or type(num) == dict:
             num.clear()
             attempt[dex] = num
             dex += 1
@@ -414,7 +428,6 @@ def exit():
     attempt[1] = qs
     attempt[2] = int(num)
     ans_dicts[module[0]] = attempt
-    print(ans_dicts)
     return render_template("modules.html", signin=user[0])
 
 
