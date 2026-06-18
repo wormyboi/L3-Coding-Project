@@ -194,3 +194,30 @@ form {
 .errormsg {
     color: darkred;
 }
+
+.modcard {
+    background-color: whitesmoke;
+    border: 1px solid black;
+    padding: 0px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.modlink {
+    border: none;
+    background-color: whitesmoke;
+    width: 100%;
+    padding: 2% 0 4% 0;
+}
+
+.modcard:hover {
+    filter: brightness(92%);
+}
+
+.card_container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    column-gap: 5%;
+    row-gap: 10%;
+    padding: 2% 7% 2% 7%;
+}

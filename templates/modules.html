@@ -15,20 +15,46 @@
     </head>
     <body>
         <h3>All Modules</h3>
+        <div class="card_container">
+            <form class="modcard">
+                <input type="hidden" name="act" value="Rips">
+                <input type="image" src="{{ url_for('static', filename='temp_ripcard.jpg') }}" alt="rip current" width="100%" height="auto">
+                <br>
+                <input type="submit" value="Rips" class="modlink">
+            </form>
+            <form class="modcard">
+                <input type="hidden" name="act" value="Waves">
+                <input type="image" src="{{ url_for('static', filename='temp_wavecard.jpg') }}" alt="wave" width="100%" height="auto">
+                <br>
+                <input type="submit" value="Waves" class="modlink">
+            </form>
+            <form class="modcard">
+                <input type="hidden" name="act" value="Hole">
+                <input type="image" src="{{ url_for('static', filename='temp_holecard.jpg') }}" alt="beach with exposed holes" width="100%" height="auto">
+                <br>
+                <input type="submit" value="Holes" class="modlink">
+            </form>
+        </div>
         <h3>Quizzes</h3>
-        <form action="/quiz" method="post" class="modcard">
-            <img src="{{ url_for('static', filename='temp_ripcard.jpg') }}">
-            <input type="hidden" name="act" value="Quiz - Rips">
-            <input type="submit" value="rips" class="modlink">
-        </form>
-        <form action="/quiz" method="post" class="modcard">
-            <input type="hidden" name="act" value="Quiz - Waves">
-            <input type="submit" value="waves" class="modlink">
-        </form>
-        <form action="/quiz" method="post" class="modcard">
-            <input type="hidden" name="act" value="Quiz - Holes">
-            <input type="submit" value="holes" class="modlink">
-        </form>
+        <div class="card_container">
+            <form action="/quiz" method="post" class="modcard">
+                <input type="hidden" name="act" value="Quiz - Rips">
+                <input type="image" src="{{ url_for('static', filename='temp_ripcard.jpg') }}" alt="rip current" width="100%" height="auto">
+                <br>
+                <input type="submit" value="Quiz - Rips" class="modlink">
+            </form>
+            <form action="/quiz" method="post" class="modcard">
+                <input type="hidden" name="act" value="Quiz - Waves">
+                <input type="image" src="{{ url_for('static', filename='temp_wavecard.jpg') }}" alt="wave" width="100%" height="auto">
+                <br>
+                <input type="submit" value="Quiz - Waves" class="modlink">
+            </form>
+            <form action="/quiz" method="post" class="modcard">
+                <input type="hidden" name="act" value="Quiz - Holes">
+                <input type="image" src="{{ url_for('static', filename='temp_holecard.jpg') }}" alt="beach with exposed holes" width="100%" height="auto">
+                <input type="submit" value="Quiz - Holes" class="modlink">
+            </form>
+        </div>
     </body>
 {% endblock %}
 </html>
