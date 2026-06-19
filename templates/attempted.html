@@ -14,7 +14,27 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
-        
+        <h3>In progress</h3>
+        {% if c_len > 0:%}
+            {% for mod in c_atmpt: %}
+                <form class="modcard">
+                    <input type="hidden" name="act" value="{{ mod }}">
+                    <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
+                    <br>
+                    <input type="submit" value="{{ mod }}" class="modlink">
+                </form>
+            {% endfor %}
+        {% else: %}
+            <div>
+                <p>
+                    You have no modules currently in progress. Click <a href="{{ url_for('modules') }}">here</a> 
+                    to go to the modules page to begin one.
+                </p>
+            </div>
+        {% endif %}
+        <h3>Completed</h3>
+        <h4>Modules</h4>
+        <h4>Quizzes</h4>
     </body>
 {% endblock %}
 </html>

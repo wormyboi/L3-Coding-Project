@@ -23,6 +23,23 @@ ans = {}
 user_ans = {}
 high_scores = {"rips": 0, "holes": 0, "waves": 0}
 
+#Modules / quizzes that are in progress
+c_atmpt = []
+#Completed modules / quizzes
+completem = []
+completeq = []
+
+#Image information for each of the module / quiz cards on the modules / home pages
+#"quiz / module name": ["src", "alt"]
+modcard = {
+    "Rips": ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
+    "Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"], 
+    "Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
+    "Quiz - Rips": ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
+    "Quiz - Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
+    "Quiz - Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"]
+    }
+
 #contain user answers for attempts currently in progress
 user_ans_rips = {}
 user_ans_holes = {}
@@ -107,18 +124,22 @@ var_info = []
 #home page
 @app.route('/')
 def home():
-    print(ans_dicts)
     return render_template('index.html', signin=user[0])
 
 #all modules page
 @app.route('/modules')
 def modules():
-    return render_template('modules.html', signin=user[0])
+    return render_template('modules.html', signin=user[0], modcard_info=modcard)
 
 #attempted modules page
 @app.route('/attempted')
 def attempted():
-    return render_template('attempted.html', signin=user[0])
+    c_len = len(c_atmpt)
+    completem_len = len(completem)
+    completeq_len = len(completeq)
+    return render_template('attempted.html', signin=user[0], c_atmpt=c_atmpt, completem=completem,
+                            completeq=completeq, modcard_info=modcard, c_len=c_len,
+                            completem_len=completem_len, completeq_len=completeq_len)
 
 #profile page
 @app.route('/profile')
@@ -411,6 +432,20 @@ def endquiz():
         modu = mod[2].lower()
         if score > high_scores[modu]:
             high_scores[modu] = score
+    #Removes module / quiz from complete list if it's been completed previously,
+    #then adds it back as the 1st item of the list.
+    mod = module[0].split()
+    if mod[0] == "Quiz":
+        if module[0] in completeq:
+            completeq.remove(module[0])
+        completeq.insert(0, module[0])
+    else:
+        if module[0] in completem:
+            completem.remove(module[0])
+        completem.insert(0, module[0])
+    #Removes module / quiz from current attempts dictionary
+    if module[0] in c_atmpt:
+        c_atmpt.remove(module[0])
     return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score)
 
 @app.route('/exit', methods=["POST"])
@@ -428,6 +463,9 @@ def exit():
     attempt[1] = qs
     attempt[2] = int(num)
     ans_dicts[module[0]] = attempt
+    if module[0] in c_atmpt:
+        c_atmpt.remove(module[0])
+    c_atmpt.insert(0, module[0])
     return render_template("modules.html", signin=user[0])
 
 
