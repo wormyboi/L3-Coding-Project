@@ -11,7 +11,7 @@ user = ["no", "n/a"]
 user_ids = {"bleh": "password123"}
 
 #Reccomended modules to be displayed on home page
-recs = ["rips", "holes", "waves"]
+recs = ["Quiz - Rips", "Quiz - Holes", "Quiz - Waves"]
 
 #selected module
 module=["none"]
@@ -99,7 +99,7 @@ waves_quiz = {
     },
     4: {
         "MEEeowwwwww": ["text", "doppler"],
-        "wawawawa": ["text", "similar"]
+        "wawawawa": ["text", "beats me"]
     },
 }
 holes_mod = {}
@@ -139,7 +139,7 @@ def attempted():
     completeq_len = len(completeq)
     return render_template('attempted.html', signin=user[0], c_atmpt=c_atmpt, completem=completem,
                             completeq=completeq, modcard_info=modcard, c_len=c_len,
-                            completem_len=completem_len, completeq_len=completeq_len)
+                            completem_len=completem_len, completeq_len=completeq_len, hs=high_scores)
 
 #profile page
 @app.route('/profile')
@@ -429,9 +429,8 @@ def endquiz():
     mod = module[0]
     mod = mod.split()
     if mod[0] == "Quiz":
-        modu = mod[2].lower()
-        if score > high_scores[modu]:
-            high_scores[modu] = score
+        if score > high_scores[module[0]]:
+            high_scores[module[0]] = score
     #Removes module / quiz from complete list if it's been completed previously,
     #then adds it back as the 1st item of the list.
     mod = module[0].split()

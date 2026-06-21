@@ -16,25 +16,49 @@
     <body>
         <h3>In progress</h3>
         {% if c_len > 0:%}
-            {% for mod in c_atmpt: %}
-                <form class="modcard">
-                    <input type="hidden" name="act" value="{{ mod }}">
-                    <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
-                    <br>
-                    <input type="submit" value="{{ mod }}" class="modlink">
-                </form>
-            {% endfor %}
+            <div class="card_container">
+                {% for mod in c_atmpt: %}
+                    <form action="/quiz" method="post" class="modcard">
+                        <input type="hidden" name="act" value="{{ mod }}">
+                        <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
+                        <br>
+                        <input type="submit" value="{{ mod }}" class="modlink">
+                    </form>
+                {% endfor %}
+            </div>
         {% else: %}
             <div>
                 <p>
                     You have no modules currently in progress. Click <a href="{{ url_for('modules') }}">here</a> 
-                    to go to the modules page to begin one.
+                    to begin one.
                 </p>
             </div>
         {% endif %}
         <h3>Completed</h3>
-        <h4>Modules</h4>
-        <h4>Quizzes</h4>
+        {{% if completeq_len > 0 or completem_len > 0: %}}
+            <h4>Modules</h4>
+            <h4>Quizzes</h4>
+            {% if completeq_len > 0: %}
+                <div class="card_container">
+                    {% for mod in completeq: %}
+                        <form action="/quiz" method="post" class="modcard">
+                            <input type="hidden" name="act" value="{{ mod }}">
+                            <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
+                            <br>
+                            <input type="submit" value="{{ mod }}" class="modlink">
+                        </form>
+                    {% endfor %}
+                </div>
+            {% else: %}
+                <div>
+                    <p>You have no completed quizzes</p>
+                </div>
+            {% endif %}
+        {% else: %}
+            <div>
+                <p>You have no completed modules or quizzes</p>
+            </div>
+        {% endif %}
     </body>
 {% endblock %}
 </html>
