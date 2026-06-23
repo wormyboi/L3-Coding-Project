@@ -36,7 +36,7 @@ modcard = {
     "Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"], 
     "Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
     "Quiz - Rips": ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
-    "Quiz - Holes": ["'temp_holecard.jpg'", "beach with exposed holes"], 
+    "Quiz - Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
     "Quiz - Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"]
     }
 
@@ -66,7 +66,16 @@ q_lock = {}
 
 
 #Dictionaries containing quiz / module questions and their answers
-rips_mod = {}
+rips_mod = {
+    1: {"Starting info": ["infopage", "n/a"]},
+    2: {"Follow up q (prob abt identification)": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
+    3: {"Further info": ["infopage", "n/a"]},
+    4: {"Video maybe": ["infopage", "n/a"]},
+    5: {"another q (maybe with img options)": ["checkbox", "correct", "no", "also no"]},
+    6: {"identifying q 2 (from shore this time)": ["checkbox", "right", "wrong", "wrong again"]},
+    7: {"Escaping rips(?)": ["infopage", "n/a"]},
+    8: {"q abt prev info": ["radio", "ans", "not ans"]}
+}
 rips_quiz = {
     1: {
         "var1": ["text", "ans"], "var2": ["text", "ans"], "var3": ["text", "ans"]
@@ -228,11 +237,15 @@ def quiz():
                 user_ans[q] = prev_ans[q]
             if module[0] == "Quiz - Rips":
                 tp = "quiz"
+                #Setting up ans dictionary
                 for num in rips_quiz.keys():
                     pos = rips_quiz[num]
+                    #Adding question info associated with varient from previous attempt
+                    #to var_info
                     var_info.append(pos[questions[quesnum]])
                     var_list = var_info[quesnum]
                     ans[questions[quesnum]] = var_list[1]
+                    #If the question has already been answered, lock it
                     if questions[quesnum] in user_ans.keys():
                         q_lock[quesnum] = "disabled"
                     quesnum +=1
@@ -259,6 +272,7 @@ def quiz():
     #starting a new attempt
     else:
         #Puts together a question set for the relevant quiz / module
+        #Setting up quiz questions
         if module[0] == "Quiz - Rips":
             tp = "quiz"
             for num in rips_quiz.keys():
@@ -298,11 +312,25 @@ def quiz():
                 var_list = var_info[quesnum]
                 ans[q] = var_list[1]
                 quesnum +=1
+        #Setting up module questions
+        elif module[0] == "Rips":
+            tp = "module"
+            for num in rips_mod.keys():
+                pos = rips_mod[num]
+                pos_questions = []
+                for i in pos.keys():
+                    pos_questions.append(i)
+                q = random.choice(pos_questions)
+                questions.append(q)
+                var_info.append(pos[q])
+                var_list = var_info[quesnum]
+                ans[q] = var_list[1]
+                quesnum +=1
         no = 0
     num = str(no)
     var_list = var_info[no]
     #If the question has a radio or checkbox input, sets up a list of options.
-    if var_list[0] != "text":
+    if (var_list[0] != "text") and (var_list[0] != "infopage"):
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)
@@ -378,7 +406,7 @@ def quizpage():
     #Setting var_list to the list of information for the question that's
     #going to be displayed and setting up a list of options if necessary
     var_list = var_info[no]
-    if var_list[0] != "text":
+    if (var_list[0] != "text") and (var_list[0] != "infopage"):
         for optn in var_list:
             if optn != var_list[0]:
                 opt.append(optn)

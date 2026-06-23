@@ -163,6 +163,15 @@ form {
     color: magenta;
 }
 
+.active_page_link {
+    display: inline-block;
+    text-align: center;
+    padding: 7px;
+    border-radius: 4px;
+    background-color: yellow;
+    color: magenta;
+}
+
 .page_list {
     list-style: none;
     margin: 0;

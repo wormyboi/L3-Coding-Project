@@ -59,7 +59,7 @@
                     {% for mod in completeq: %}
                         <form action="/quiz" method="post" class="modcard">
                             <input type="hidden" name="act" value="{{ mod }}">
-                            <input type="image" src="{{ url_for('static', filename={{mod_info[mod][0]}}) }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
+                            <input type="image" src="{{mod_info[mod[0]]}}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
                             <br>
                             <input type="submit" value="{{ mod }}" id="modlink_{{ mod }}" class="modlink_a">
                             <br>
