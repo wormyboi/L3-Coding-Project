@@ -22,7 +22,7 @@
                         <input type="hidden" name="act" value="{{ mod }}">
                         <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
                         <br>
-                        <input type="submit" value="{{ mod }}" class="modlink">
+                        <input type="submit" value="{{ mod }}" class="modlink" class="modlink_a">
                     </form>
                 {% endfor %}
             </div>
@@ -35,17 +35,35 @@
             </div>
         {% endif %}
         <h3>Completed</h3>
-        {{% if completeq_len > 0 or completem_len > 0: %}}
+        {% if completeq_len > 0 or completem_len > 0: %}
             <h4>Modules</h4>
+            {% if completem_len > 0: %}
+                <div class="card_container">
+                    {% for mod in completem: %}
+                        <form action="/quiz" method="post" class="modcard">
+                            <input type="hidden" name="act" value="{{ mod }}">
+                            <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
+                            <br>
+                            <input type="submit" value="{{ mod }}" class="modlink" class="modlink_a">
+                        </form>
+                    {% endfor %}
+                </div>
+            {% else: %}
+                <div>
+                    <p>You have no completed modules</p>
+                </div>
+            {% endif %}
             <h4>Quizzes</h4>
             {% if completeq_len > 0: %}
                 <div class="card_container">
                     {% for mod in completeq: %}
                         <form action="/quiz" method="post" class="modcard">
                             <input type="hidden" name="act" value="{{ mod }}">
-                            <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
+                            <input type="image" src="{{ url_for('static', filename={{mod_info[mod][0]}}) }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
                             <br>
-                            <input type="submit" value="{{ mod }}" class="modlink">
+                            <input type="submit" value="{{ mod }}" id="modlink_{{ mod }}" class="modlink_a">
+                            <br>
+                            <label for="modlink_{{ mod }}" class="hslabel">(high score: {{ hs[mod] }}%)</label>
                         </form>
                     {% endfor %}
                 </div>

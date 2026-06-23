@@ -21,7 +21,7 @@ questions = []
 ans = {}
 
 user_ans = {}
-high_scores = {"rips": 0, "holes": 0, "waves": 0}
+high_scores = {"Quiz - Rips": 0, "Quiz - Holes": 0, "Quiz - Waves": 0}
 
 #Modules / quizzes that are in progress
 c_atmpt = []
@@ -36,7 +36,7 @@ modcard = {
     "Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"], 
     "Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
     "Quiz - Rips": ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
-    "Quiz - Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
+    "Quiz - Holes": ["'temp_holecard.jpg'", "beach with exposed holes"], 
     "Quiz - Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"]
     }
 
@@ -428,9 +428,10 @@ def endquiz():
             score +=1
     mod = module[0]
     mod = mod.split()
+    percent_score = (score/quesnum)*100
     if mod[0] == "Quiz":
-        if score > high_scores[module[0]]:
-            high_scores[module[0]] = score
+        if percent_score > high_scores[module[0]]:
+            high_scores[module[0]] = percent_score
     #Removes module / quiz from complete list if it's been completed previously,
     #then adds it back as the 1st item of the list.
     mod = module[0].split()

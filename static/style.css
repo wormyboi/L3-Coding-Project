@@ -207,7 +207,17 @@ form {
     border: none;
     background-color: whitesmoke;
     width: 100%;
-    padding: 2% 0 4% 0;
+    padding: 2% 0 3% 0;
+    font-weight: bold;
+}
+
+.modlink_a {
+    border: none;
+    background-color: whitesmoke;
+    width: 100%;
+    padding: 2% 0 3% 0;
+    font-weight: bold;
+    font-size: medium;
 }
 
 .modcard:hover {
@@ -220,4 +230,11 @@ form {
     column-gap: 5%;
     row-gap: 10%;
     padding: 2% 7% 2% 7%;
+}
+
+.hslabel {
+    width: 100%;
+    display: block;
+    text-align: center;
+    padding-bottom: 4%;
 }
