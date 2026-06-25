@@ -37,6 +37,7 @@
             <input type="submit" value="Save and Exit">
         </form>
         <h1>{{ module }}</h1>
+        <p class="pagenum">Page {{ no+1 }} of {{ quesnum }}</p>
         <!-- if the user is completing a quiz -->
         {% if tp == "quiz" %}
             <h2>{{ questions[no] }}</h2>

@@ -22,13 +22,13 @@
                 <br>
                 <input type="submit" value="Rips" class="modlink">
             </form>
-            <form class="modcard">
+            <form action="/quiz" method="post" class="modcard">
                 <input type="hidden" name="act" value="Waves">
                 <input type="image" src="{{ url_for('static', filename='temp_wavecard.jpg') }}" alt="wave" width="100%" height="auto">
                 <br>
                 <input type="submit" value="Waves" class="modlink">
             </form>
-            <form class="modcard">
+            <form action="/quiz" method="post" class="modcard">
                 <input type="hidden" name="act" value="Hole">
                 <input type="image" src="{{ url_for('static', filename='temp_holecard.jpg') }}" alt="beach with exposed holes" width="100%" height="auto">
                 <br>

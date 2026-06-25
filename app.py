@@ -4,6 +4,14 @@ import random
 app = Flask(__name__)
 
 #Set up
+#Constants
+RIPMOD = "Rips"
+RIPQUIZ = "Quiz - Rips"
+WAVEMOD = "Waves"
+WAVEQUIZ = "Quiz - Waves"
+HOLEMOD = "Holes"
+HOLEQUIZ = "Quiz - Holes"
+
 #If the user is signed in, username
 user = ["no", "n/a"]
 
@@ -11,7 +19,7 @@ user = ["no", "n/a"]
 user_ids = {"bleh": "password123"}
 
 #Reccomended modules to be displayed on home page
-recs = ["Quiz - Rips", "Quiz - Holes", "Quiz - Waves"]
+recs = [RIPMOD, HOLEMOD, WAVEMOD]
 
 #selected module
 module=["none"]
@@ -21,7 +29,7 @@ questions = []
 ans = {}
 
 user_ans = {}
-high_scores = {"Quiz - Rips": 0, "Quiz - Holes": 0, "Quiz - Waves": 0}
+high_scores = {RIPMOD: 0, HOLEMOD: 0, WAVEMOD: 0}
 
 #Modules / quizzes that are in progress
 c_atmpt = []
@@ -32,12 +40,12 @@ completeq = []
 #Image information for each of the module / quiz cards on the modules / home pages
 #"quiz / module name": ["src", "alt"]
 modcard = {
-    "Rips": ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
-    "Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"], 
-    "Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
-    "Quiz - Rips": ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
-    "Quiz - Holes": ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
-    "Quiz - Waves": ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"]
+    RIPMOD: ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
+    WAVEMOD: ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"], 
+    HOLEMOD: ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
+    RIPQUIZ: ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
+    HOLEQUIZ: ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
+    WAVEQUIZ: ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"]
     }
 
 #contain user answers for attempts currently in progress
@@ -89,8 +97,18 @@ rips_quiz = {
         "Var 1": ["checkbox", "ans", "not-ans", "v-not-ans"],
         "Var 2": ["checkbox", "right", "wrong", "not this one"]
         },
-    }
-waves_mod = {}
+}
+waves_mod = {
+    1: {"Starting info": ["infopage", "n/a"]},
+    2: {"Follow up q (prob abt wave formation)": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
+    3: {"Further info": ["infopage", "n/a"]},
+    4: {"Video maybe": ["infopage", "n/a"]},
+    5: {"another q (maybe with img options)": ["checkbox", "correct", "no", "also no"]},
+    6: {"identifying wave type q": ["checkbox", "right", "wrong", "wrong again"]},
+    7: {"Biggest risks of certain wave types(?)": ["infopage", "n/a"]},
+    8: {"q abt prev info": ["radio", "ans", "not ans"]}
+}
+
 waves_quiz = {
     1: {
         "question1": ["radio", "answer that is right", "answer that isn't", "other answer that isn't"],
@@ -111,7 +129,16 @@ waves_quiz = {
         "wawawawa": ["text", "beats me"]
     },
 }
-holes_mod = {}
+holes_mod = {
+    1: {"Starting info": ["infopage", "n/a"]},
+    2: {"Follow up q": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
+    3: {"Further info": ["infopage", "n/a"]},
+    4: {"Video maybe": ["infopage", "n/a"]},
+    5: {"another q (maybe identifying holes from pics)": ["checkbox", "correct", "no", "also no"]},
+    6: {"identifying q 2": ["checkbox", "right", "wrong", "wrong again"]},
+    7: {"Risks around holes": ["infopage", "n/a"]},
+    8: {"q abt prev info": ["radio", "ans", "not ans"]}
+}
 holes_quiz = {
     1: {
         "holes q goes here": ["checkbox", "right", "wrong"],
@@ -235,7 +262,7 @@ def quiz():
         if type(prev_ans) == dict:
             for q in prev_ans.keys():
                 user_ans[q] = prev_ans[q]
-            if module[0] == "Quiz - Rips":
+            if module[0] == RIPQUIZ:
                 tp = "quiz"
                 #Setting up ans dictionary
                 for num in rips_quiz.keys():
@@ -249,7 +276,7 @@ def quiz():
                     if questions[quesnum] in user_ans.keys():
                         q_lock[quesnum] = "disabled"
                     quesnum +=1
-            elif module[0] == "Quiz - Holes":
+            elif module[0] == HOLEQUIZ:
                 tp = "quiz"
                 for num in holes_quiz.keys():
                     pos = holes_quiz[num]
@@ -259,7 +286,7 @@ def quiz():
                     if questions[quesnum] in user_ans.keys():
                         q_lock[quesnum] = "disabled"
                     quesnum += 1
-            elif module[0] == "Quiz - Waves":
+            elif module[0] == WAVEQUIZ:
                 tp = "quiz"
                 for num in waves_quiz.keys():
                     pos = waves_quiz[num]
@@ -268,6 +295,30 @@ def quiz():
                     ans[questions[quesnum]] = var_list[1]
                     if questions[quesnum] in user_ans.keys():
                         q_lock[quesnum] = "disabled"
+                    quesnum += 1
+            elif module[0] == RIPMOD:
+                tp = "module"
+                for num in rips_mod.keys():
+                    pos = rips_mod[num]
+                    var_info.append(pos[questions[quesnum]])
+                    var_list = var_info[quesnum]
+                    ans[questions[quesnum]] = var_list[1]
+                    quesnum += 1
+            elif module[0] == WAVEMOD:
+                tp = "module"
+                for num in waves_mod.keys():
+                    pos = waves_mod[num]
+                    var_info.append(pos[questions[quesnum]])
+                    var_list = var_info[quesnum]
+                    ans[questions[quesnum]] = var_list[1]
+                    quesnum += 1
+            elif module[0] == HOLEMOD:
+                tp = "module"
+                for num in holes_mod.keys():
+                    pos = holes_mod[num]
+                    var_info.append(pos[questions[quesnum]])
+                    var_list = var_info[quesnum]
+                    ans[questions[quesnum]] = var_list[1]
                     quesnum += 1
     #starting a new attempt
     else:
@@ -313,10 +364,36 @@ def quiz():
                 ans[q] = var_list[1]
                 quesnum +=1
         #Setting up module questions
-        elif module[0] == "Rips":
+        elif module[0] == RIPMOD:
             tp = "module"
             for num in rips_mod.keys():
                 pos = rips_mod[num]
+                pos_questions = []
+                for i in pos.keys():
+                    pos_questions.append(i)
+                q = random.choice(pos_questions)
+                questions.append(q)
+                var_info.append(pos[q])
+                var_list = var_info[quesnum]
+                ans[q] = var_list[1]
+                quesnum +=1
+        elif module[0] == WAVEMOD:
+            tp = "module"
+            for num in waves_mod.keys():
+                pos = waves_mod[num]
+                pos_questions = []
+                for i in pos.keys():
+                    pos_questions.append(i)
+                q = random.choice(pos_questions)
+                questions.append(q)
+                var_info.append(pos[q])
+                var_list = var_info[quesnum]
+                ans[q] = var_list[1]
+                quesnum +=1
+        elif module[0] == HOLEMOD:
+            tp = "module"
+            for num in holes_mod.keys():
+                pos = holes_mod[num]
                 pos_questions = []
                 for i in pos.keys():
                     pos_questions.append(i)
