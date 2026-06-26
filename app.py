@@ -403,6 +403,18 @@ def quiz():
                 var_list = var_info[quesnum]
                 ans[q] = var_list[1]
                 quesnum +=1
+        #Saving question set to ans_dicts
+        attempt = ans_dicts[module[0]]
+        qs = attempt[1]
+        if type(qs) == list:
+            for q in questions:
+                qs.append(q)
+        attempt[1] = qs
+        ans_dicts[module[0]] = attempt
+        #Setting module as the 1st item in the in progress modules list
+        if module[0] in c_atmpt:
+            c_atmpt.remove(module[0])
+        c_atmpt.insert(0, module[0])
         no = 0
     num = str(no)
     var_list = var_info[no]
@@ -466,6 +478,11 @@ def quizpage():
             user_ans[q] = u_ans
             if tp == "quiz":
                 q_lock[no] = "disabled"
+            #Saving answer to ans_dicts
+            attempt = ans_dicts[module[0]]
+            attempt[0][q] = u_ans
+            ans_dicts[module[0]] = attempt
+        #If the user didn't enter an answer, return an error message
         else:
             msgtype = "errormsg"
             msg = "Please enter an answer"
