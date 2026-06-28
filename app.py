@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import random
+import os
 
 app = Flask(__name__)
 
@@ -40,12 +41,12 @@ completeq = []
 #Image information for each of the module / quiz cards on the modules / home pages
 #"quiz / module name": ["src", "alt"]
 modcard = {
-    RIPMOD: ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
-    WAVEMOD: ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"], 
-    HOLEMOD: ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
-    RIPQUIZ: ["{{ url_for('static', filename='temp_ripcard.jpg') }}", "rip current"], 
-    HOLEQUIZ: ["{{ url_for('static', filename='temp_holecard.jpg') }}", "beach with exposed holes"], 
-    WAVEQUIZ: ["{{ url_for('static', filename='temp_wavecard.jpg') }}", "wave"]
+    RIPMOD: [os.path.join('/static', 'temp_ripcard.jpg'), "rip current"], 
+    WAVEMOD: [os.path.join('/static', 'temp_wavecard.jpg'), "wave"], 
+    HOLEMOD: ["os.path.join('/static', 'temp_holecard.jpg')", "beach with exposed holes"], 
+    RIPQUIZ: [os.path.join('/static', 'temp_ripcard.jpg'), "rip current"], 
+    HOLEQUIZ: [os.path.join('/static', 'temp_holecard.jpg'), "beach with exposed holes"], 
+    WAVEQUIZ: [os.path.join('/static', 'temp_wavecard.jpg'), "wave"]
     }
 
 #contain user answers for attempts currently in progress
@@ -64,7 +65,7 @@ qset_holesmod = []
 qset_wavesmod = []
 #"Quiz / module name": [user answers, question set, current question number]
 ans_dicts = {
-    "Quiz - Rips": [user_ans_rips, qset_rips, 0], "Quiz - Waves": [user_ans_waves, qset_waves, 0], 
+    RIPQUIZ: [user_ans_rips, qset_rips, 0], "Quiz - Waves": [user_ans_waves, qset_waves, 0], 
     "Quiz - Holes": [user_ans_holes, qset_holes, 0], "Rips": [user_ans_ripsmod, qset_ripsmod, 0], 
     "Waves": [user_ans_wavesmod, qset_wavesmod, 0], "Holes": [user_ans_holesmod, qset_holesmod, 0]
     }
@@ -235,9 +236,10 @@ def log():
 #Logs user out and returns them to the home page   
 @app.route('/logout', methods=["POST"])
 def logout():
+    page = request.form.get("page")
     user[0] = "no"
     user[1] = "n/a"
-    return render_template("index.html", signin=user[0])
+    return render_template(page, signin=user[0])
 
 @app.route('/quiz', methods=["POST"])
 def quiz():

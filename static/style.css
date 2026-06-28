@@ -235,7 +235,7 @@ form {
 
 .card_container {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 30% 30% 30%;
     column-gap: 5%;
     row-gap: 10%;
     padding: 2% 7% 2% 7%;
