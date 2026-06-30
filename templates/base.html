@@ -49,24 +49,24 @@
         {% block content %}
 
         {% endblock %}
-        <div class="footer">
-            <ul>
-                <li><a>Home</a></li>
-                <li><a>All Modules</a></li>
-                <li><a>Attempted Modules</a></li>
+        <footer>
+            <ul class="footlist">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('modules') }}">All Modules</a></li>
+                <li><a href="{{ url_for('attempted') }}">Attempted Modules</a></li>
                 {% if signin == "yes": %}
-                    <li><a>Profile</a></li>
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
                     <li>
-                        <form action="/logout" method="post">
-                            <input type="hidden" name="page" value="{{block pagename}}index.html{{endblock}}">
-                            <input type="submit" value="Logout">
+                        <form action="/logout" method="post" class="footform">
+                            <input type="hidden" name="page" value="{%block pagename%}index.html{%endblock%}">
+                            <input type="submit" value="Logout" class="footbutton">
                         </form>
                     </li>
                 {% else: %}
-                    <li><a>Log in</a></li>
-                    <li><a>Sign up</a></li>
+                    <li><a href="{{ url_for('login') }}">Log in</a></li>
+                    <li><a href="{{ url_for('signup') }}">Sign up</a></li>
                 {% endif %}
             </ul>
-        </div>
+        </footer>
     </body>
 </html>

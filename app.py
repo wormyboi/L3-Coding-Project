@@ -239,7 +239,7 @@ def logout():
     page = request.form.get("page")
     user[0] = "no"
     user[1] = "n/a"
-    return render_template(page, signin=user[0])
+    return render_template(page, signin=user[0], modcard_info=modcard)
 
 @app.route('/quiz', methods=["POST"])
 def quiz():

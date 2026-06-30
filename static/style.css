@@ -251,3 +251,36 @@ form {
 .pagenum {
     margin: -1% 2% 3% 2%;
 }
+
+body {
+    min-height: 98vh;
+}
+
+footer {
+    width: 100%;
+    background-color: rgb(17, 201, 201);
+    position: sticky;
+    top: 100vh;
+    padding-top: 1%;
+    padding-bottom: 2%;
+}
+
+.footlist {
+    list-style: none;
+}
+
+.footbutton {
+    border: 0;
+    background-color: transparent;
+    text-decoration: underline;
+    color: rgb(61, 31, 145);
+    font-family:'Times New Roman', Times, serif;
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.footform {
+    margin: 0;
+    padding: 0;
+}
