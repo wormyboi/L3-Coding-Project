@@ -146,14 +146,16 @@ form {
     background-color: royalblue;
     color: whitesmoke;
     margin-top: 5%;
-    padding: 3px 10px 12px 10px;
+    padding: 4px 30px 22px 15px;
     position: absolute;
+    font-size: larger;
+    text-decoration: underline;
 }
 
 .page_link {
     display: inline-block;
     text-align: center;
-    padding: 7px;
+    padding: 9px;
     border-radius: 4px;
 }
 
@@ -166,7 +168,7 @@ form {
 .active_page_link {
     display: inline-block;
     text-align: center;
-    padding: 7px;
+    padding: 9px;
     border-radius: 4px;
     background-color: yellow;
     color: magenta;
@@ -258,7 +260,7 @@ body {
 
 footer {
     width: 100%;
-    background-color: rgb(17, 201, 201);
+    background-color:rgb(155, 196, 196);
     position: sticky;
     top: 100vh;
     padding-top: 1%;

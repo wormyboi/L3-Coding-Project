@@ -30,7 +30,7 @@ questions = []
 ans = {}
 
 user_ans = {}
-high_scores = {RIPMOD: 0, HOLEMOD: 0, WAVEMOD: 0}
+high_scores = {RIPQUIZ: 0, HOLEQUIZ: 0, WAVEQUIZ: 0}
 
 #Modules / quizzes that are in progress
 c_atmpt = []
@@ -43,7 +43,7 @@ completeq = []
 modcard = {
     RIPMOD: [os.path.join('/static', 'temp_ripcard.jpg'), "rip current"], 
     WAVEMOD: [os.path.join('/static', 'temp_wavecard.jpg'), "wave"], 
-    HOLEMOD: ["os.path.join('/static', 'temp_holecard.jpg')", "beach with exposed holes"], 
+    HOLEMOD: [os.path.join('/static', 'temp_holecard.jpg'), "beach with exposed holes"], 
     RIPQUIZ: [os.path.join('/static', 'temp_ripcard.jpg'), "rip current"], 
     HOLEQUIZ: [os.path.join('/static', 'temp_holecard.jpg'), "beach with exposed holes"], 
     WAVEQUIZ: [os.path.join('/static', 'temp_wavecard.jpg'), "wave"]
@@ -105,9 +105,10 @@ waves_mod = {
     3: {"Further info": ["infopage", "n/a"]},
     4: {"Video maybe": ["infopage", "n/a"]},
     5: {"another q (maybe with img options)": ["checkbox", "correct", "no", "also no"]},
-    6: {"identifying wave type q": ["checkbox", "right", "wrong", "wrong again"]},
-    7: {"Biggest risks of certain wave types(?)": ["infopage", "n/a"]},
-    8: {"q abt prev info": ["radio", "ans", "not ans"]}
+    6: {"Biggest risks of certain wave types(?)": ["infopage", "n/a"]},
+    7: {"identifying wave type q": ["checkbox", "right", "wrong", "wrong again"]},
+    8: {"q abt prev info": ["radio", "ans", "not ans"]},
+    9: {"Final words": ["infopage", "n/a"]}
 }
 
 waves_quiz = {
@@ -134,8 +135,8 @@ holes_mod = {
     1: {"Starting info": ["infopage", "n/a"]},
     2: {"Follow up q": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
     3: {"Further info": ["infopage", "n/a"]},
-    4: {"Video maybe": ["infopage", "n/a"]},
-    5: {"another q (maybe identifying holes from pics)": ["checkbox", "correct", "no", "also no"]},
+    4: {"another q (maybe identifying holes from pics)": ["checkbox", "correct", "no", "also no"]},
+    5: {"Video maybe": ["infopage", "n/a"]},
     6: {"identifying q 2": ["checkbox", "right", "wrong", "wrong again"]},
     7: {"Risks around holes": ["infopage", "n/a"]},
     8: {"q abt prev info": ["radio", "ans", "not ans"]}
@@ -154,6 +155,30 @@ holes_quiz = {
                                                                                   "you lack credibilty", "I don't know what to believe anymore"],
     },
 }
+
+#Contains content (videos, photos, and text) for module infopages
+module_content = {
+    RIPMOD: {
+        1: {"text": "Very enlightening intro text"},
+        3: {"text": "Some info abt rips", "img": [os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"], "text": "More info abt rips, now with the context of the picture"},
+        4: {"video": "", "text": "Wasn't that such an interesting video. So interesting that I've decided to write more abt it here."},
+        7: {"text": "Almost done! (hasn't this been so fun?)", "img": [os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"]},
+    },
+    WAVEMOD: {
+        1: {"img": [os.path.join('/static', 'temp_ripcard.jpg'), "alt text"], "text": "Wave: a disturbance that transfers energy through a medium from one place to another"},
+        3: {"img": [os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], "text": "Wow! look at that wave!"},
+        4: {"text": "You get to watch a video now", "video": ""},
+        6: {"text": "Nyeeeooooom", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": ":O that wasn't a picture of a wave"},
+        9: {"img": [os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], "text": "Yipee! All done!"},
+    },
+    HOLEMOD: {
+        1: {"text": ""},
+        3: {"text": "", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": "", "video": ""},
+        5: {"text": "", "video": ""},
+        7: {"text": "", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": ""},
+    }
+}
+
 #contains innermost lists from above dictionaries for selected questions
 var_info = []
 

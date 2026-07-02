@@ -84,6 +84,9 @@
                     <input type="submit" value="submit">
                 </form>
             {% endif %}
+            {% if msg: %}
+                <p class="{{msgtype}}">{{ msg }}</p>
+            {% endif %}
         {% endif %}
         <!-- Navigation menu - allows user to move to any question number -->
         <div class="quiznav">
