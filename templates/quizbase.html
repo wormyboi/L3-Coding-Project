@@ -52,9 +52,9 @@
                     {% endfor %}
                 {% endif %}
                 <!-- local variables to be carried over to next question-->
-                <input type="hidden" id="q_type" name="q_type" value="{{var_list[0]}}">
-                <input type="hidden" id="q_num" name="q_num" value="{{num}}">
-                <input type="hidden" id="act_type" name="act_type" value="submit">
+                <input type="hidden" name="q_type" value="{{var_list[0]}}">
+                <input type="hidden" name="q_num" value="{{num}}">
+                <input type="hidden" name="act_type" value="submit">
                 <input type="submit" value="submit" {{ q_lock }}>
             </form>
             {% if msg: %}
@@ -65,7 +65,18 @@
             <h2>{{ questions[no] }}</h2>
             <!-- If the page has no question -->
             {% if var_list[0] == "infopage": %}
-                <p>Insert info here</p>
+                {% for slot_num in page_content.keys(): %}
+                    {% if slot_num[0] == "text": %}
+                        <p class="modtxt">{{ page_content[slot_num][1] }}</p>
+                    {% elif slot_num[0] == "img": %}
+                        <img src="{{ page_content[slot_num][1] }}" alt="{{ page_content[slot_num][2] }}" class="modimg">
+                    {% elif slot_num[0] == "video": %}
+                        <video width="100%" height="auto" controls>
+                            <source src="{{ page_content[slot_num][1] }}" type="video/mp4">
+                            This video cannot be played on your browser.
+                        </video>
+                    {% endif %}
+                {% endfor %}
             <!-- If it does have a question display question form -->
             {% else: %}
                 <form action="/quizpage" method="post">

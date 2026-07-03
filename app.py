@@ -159,23 +159,23 @@ holes_quiz = {
 #Contains content (videos, photos, and text) for module infopages
 module_content = {
     RIPMOD: {
-        1: {"text": "Very enlightening intro text"},
-        3: {"text": "Some info abt rips", "img": [os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"], "text": "More info abt rips, now with the context of the picture"},
-        4: {"video": "", "text": "Wasn't that such an interesting video. So interesting that I've decided to write more abt it here."},
-        7: {"text": "Almost done! (hasn't this been so fun?)", "img": [os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"]},
+        1: {1: ["text", "Very enlightening intro text"]},
+        3: {1: ["text", "Some info abt rips"], 2: ["img", os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"], 3: ["text", "More info abt rips, now with the context of the picture"]},
+        4: {1: ["video", os.path.join('/static', 'temp_video.mp4')], 2: ["text", "Wasn't that such an interesting video. So interesting that I've decided to write more abt it here."]},
+        7: {1: ["text", "Almost done! (hasn't this been so fun?)"], 2: ["img", os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"]},
     },
     WAVEMOD: {
-        1: {"img": [os.path.join('/static', 'temp_ripcard.jpg'), "alt text"], "text": "Wave: a disturbance that transfers energy through a medium from one place to another"},
+        1: {1: ["img", os.path.join('/static', 'temp_ripcard.jpg'), "alt text"], "text": "Wave: a disturbance that transfers energy through a medium from one place to another"},
         3: {"img": [os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], "text": "Wow! look at that wave!"},
-        4: {"text": "You get to watch a video now", "video": ""},
+        4: {"text": "You get to watch a video now", "video": os.path.join('/static', 'temp_video.mp4')},
         6: {"text": "Nyeeeooooom", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": ":O that wasn't a picture of a wave"},
         9: {"img": [os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], "text": "Yipee! All done!"},
     },
     HOLEMOD: {
-        1: {"text": ""},
-        3: {"text": "", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": "", "video": ""},
-        5: {"text": "", "video": ""},
-        7: {"text": "", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": ""},
+        1: {"text": "Another intro speel (maybe not 'another' depending on what order you're doing these in)"},
+        3: {"text": "The real module starts here (as the kids say)", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": "Look at that picture", "video": os.path.join('/static', 'temp_video.mp4')},
+        5: {"text": "Another video", "video": os.path.join('/static', 'temp_video.mp4')},
+        7: {"text": "Alright this is it, I have no more to tech you", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": "I said this was it. You can finish the module now."},
     }
 }
 
@@ -277,6 +277,8 @@ def quiz():
     opt = []
     checked = {}
     quesnum = 0
+    mod_content = {}
+    page_content = {}
     #Setting up question sets for selected module / quiz
     module[0] = request.form.get("act")
     attempt = ans_dicts[module[0]]
@@ -465,11 +467,15 @@ def quiz():
             q_ans = user_ans[questions[no]]
     if no not in q_lock.keys():
         q_lock[no] = ""
+    #sets mod_content to dictionary with data for this module
+    if tp == "module" and ((no+1) in module_content[module[0]]):
+        mod_content = module_content[module[0]]
+        page_content = mod_content[no+1]
     #Renders 1st / current question (depending on whether an attempt's in progress)
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
                             var_list=var_list, opt=opt, signin=user[0], checked=checked,
-                            q_lock=q_lock[no], q_ans=q_ans)
+                            q_lock=q_lock[no], q_ans=q_ans, page_content=page_content)
 
 @app.route('/quizpage', methods=["POST"])
 def quizpage():
@@ -536,6 +542,13 @@ def quizpage():
                 else:
                     checked[optn] = ""
         random.shuffle(opt)
+    #setting up module and page content again
+    if tp == "module" and ((no+1) in module_content[module[0]]):
+        mod_content = module_content[module[0]]
+        page_content = mod_content[no+1]
+    else:
+        mod_content = {}
+        page_content = {}
     #Goes back to quizbase webpage with a message checking the user is ready 
     #to submit their attempt if they click 'finish quiz'
     if act_type == "check":
@@ -543,17 +556,17 @@ def quizpage():
             error_message = "Are you sure you want to finish this attempt?\nSome questions are unanswered"
             return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
                                 module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt,
-                                q_lock=q_lock[no], q_ans=q_ans, checked=checked)
+                                q_lock=q_lock[no], q_ans=q_ans, checked=checked, page_content=page_content)
         else:
             error_message = "Are you sure you want to finish this attempt?"
             return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
                                 module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt,
-                                q_lock=q_lock[no], q_ans=q_ans, checked=checked)
+                                q_lock=q_lock[no], q_ans=q_ans, checked=checked, page_content=page_content)
     #Sends user back to quizbase, either with the next question or their answers checked
     else:
         return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, 
                                quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0], msg=msg, msgtype=msgtype,
-                               q_lock=q_lock[no], q_ans=q_ans, checked=checked)
+                               q_lock=q_lock[no], q_ans=q_ans, checked=checked, page_content=page_content)
 
 @app.route('/endquiz', methods=["POST"])
 def endquiz():
