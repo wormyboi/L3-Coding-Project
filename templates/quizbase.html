@@ -66,12 +66,12 @@
             <!-- If the page has no question -->
             {% if var_list[0] == "infopage": %}
                 {% for slot_num in page_content.keys(): %}
-                    {% if slot_num[0] == "text": %}
+                    {% if page_content[slot_num][0] == "text": %}
                         <p class="modtxt">{{ page_content[slot_num][1] }}</p>
-                    {% elif slot_num[0] == "img": %}
+                    {% elif page_content[slot_num][0] == "img": %}
                         <img src="{{ page_content[slot_num][1] }}" alt="{{ page_content[slot_num][2] }}" class="modimg">
-                    {% elif slot_num[0] == "video": %}
-                        <video width="100%" height="auto" controls>
+                    {% elif page_content[slot_num][0] == "video": %}
+                        <video width="50%" height="auto" controls>
                             <source src="{{ page_content[slot_num][1] }}" type="video/mp4">
                             This video cannot be played on your browser.
                         </video>

@@ -165,17 +165,17 @@ module_content = {
         7: {1: ["text", "Almost done! (hasn't this been so fun?)"], 2: ["img", os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"]},
     },
     WAVEMOD: {
-        1: {1: ["img", os.path.join('/static', 'temp_ripcard.jpg'), "alt text"], "text": "Wave: a disturbance that transfers energy through a medium from one place to another"},
-        3: {"img": [os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], "text": "Wow! look at that wave!"},
-        4: {"text": "You get to watch a video now", "video": os.path.join('/static', 'temp_video.mp4')},
-        6: {"text": "Nyeeeooooom", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": ":O that wasn't a picture of a wave"},
-        9: {"img": [os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], "text": "Yipee! All done!"},
+        1: {1: ["img", os.path.join('/static', 'temp_ripcard.jpg'), "alt text"], 2: ["text", "Wave: a disturbance that transfers energy through a medium from one place to another"]},
+        3: {1: ["img", os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], 2: ["text", "Wow! look at that wave!"]},
+        4: {1: ["text", "You get to watch a video now"], 2: ["video", os.path.join('/static', 'temp_video.mp4')]},
+        6: {1: ["text", "Nyeeeooooom"], 2: ["img", os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], 3: ["text", ":O that wasn't a picture of a wave"]},
+        9: {1: ["img", os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], 2: ["text", "Yipee! All done!"]},
     },
     HOLEMOD: {
-        1: {"text": "Another intro speel (maybe not 'another' depending on what order you're doing these in)"},
-        3: {"text": "The real module starts here (as the kids say)", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": "Look at that picture", "video": os.path.join('/static', 'temp_video.mp4')},
-        5: {"text": "Another video", "video": os.path.join('/static', 'temp_video.mp4')},
-        7: {"text": "Alright this is it, I have no more to tech you", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": "I said this was it. You can finish the module now."},
+        1: {1: ["text", "Another intro speel (maybe not 'another' depending on what order you're doing these in)"]},
+        3: {1: ["text", "The real module starts here (as the kids say)"], 2: ["img", os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], 3: ["text", "Look at that picture"], 4: ["video", os.path.join('/static', 'temp_video.mp4')]},
+        5: {1: ["text", "Another video"], 2: ["video", os.path.join('/static', 'temp_video.mp4')]},
+        7: {1: ["text", "Alright this is it, I have no more to tech you"], 2: ["img", os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], 3: ["text", "I said this was it. You can finish the module now."]},
     }
 }
 
@@ -183,7 +183,7 @@ module_content = {
 quizzes = {RIPQUIZ: rips_quiz, HOLEQUIZ: holes_quiz, WAVEQUIZ: waves_quiz}
 mods = {RIPMOD: rips_mod, HOLEMOD: holes_mod, WAVEMOD: waves_mod}
 
-#contains innermost lists from above dictionaries for selected questions
+#contains innermost lists from question dictionaries for selected questions
 var_info = []
 
 #App Routes
@@ -485,11 +485,15 @@ def endquiz():
         else:
             attempt[dex] = 0
     ans_dicts[module[0]] = attempt
-    quesnum = len(questions)
+    dex = 0
+    quesnum = 0
     score = 0
     for q in questions:
         if q not in user_ans.keys():
             user_ans[q] = ""
+        if var_info[dex][0] != "infopage":
+            quesnum +=1
+        dex += 1
     for q in ans.keys():
         if ans[q] == user_ans[q]:
             score +=1
@@ -513,7 +517,7 @@ def endquiz():
     #Removes module / quiz from current attempts dictionary
     if module[0] in c_atmpt:
         c_atmpt.remove(module[0])
-    return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score)
+    return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score, percent_score=percent_score)
 
 @app.route('/exit', methods=["POST"])
 def exit():

@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
-        <h2>Results: {{ score }}/{{ quesnum }}</h2>
+        <h2>Results: {{ percent_score }}% &nbsp; &nbsp; ({{ score }}/{{ quesnum }})</h2>
     </body>
 {% endblock %}
 </html>
