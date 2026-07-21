@@ -65,9 +65,9 @@ qset_holesmod = []
 qset_wavesmod = []
 #"Quiz / module name": [user answers, question set, current question number]
 ans_dicts = {
-    RIPQUIZ: [user_ans_rips, qset_rips, 0], "Quiz - Waves": [user_ans_waves, qset_waves, 0], 
-    "Quiz - Holes": [user_ans_holes, qset_holes, 0], "Rips": [user_ans_ripsmod, qset_ripsmod, 0], 
-    "Waves": [user_ans_wavesmod, qset_wavesmod, 0], "Holes": [user_ans_holesmod, qset_holesmod, 0]
+    RIPQUIZ: [user_ans_rips, qset_rips, 0], WAVEQUIZ: [user_ans_waves, qset_waves, 0], 
+    HOLEQUIZ: [user_ans_holes, qset_holes, 0], RIPMOD: [user_ans_ripsmod, qset_ripsmod, 0], 
+    WAVEMOD: [user_ans_wavesmod, qset_wavesmod, 0], HOLEMOD: [user_ans_holesmod, qset_holesmod, 0]
     }
 
  #which questions are no longer able to be answered
@@ -178,6 +178,10 @@ module_content = {
         7: {"text": "Alright this is it, I have no more to tech you", "img": [os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], "text": "I said this was it. You can finish the module now."},
     }
 }
+
+#module / quiz names: question dictionary
+quizzes = {RIPQUIZ: rips_quiz, HOLEQUIZ: holes_quiz, WAVEQUIZ: waves_quiz}
+mods = {RIPMOD: rips_mod, HOLEMOD: holes_mod, WAVEMOD: waves_mod}
 
 #contains innermost lists from above dictionaries for selected questions
 var_info = []
@@ -291,147 +295,45 @@ def quiz():
         if type(prev_ans) == dict:
             for q in prev_ans.keys():
                 user_ans[q] = prev_ans[q]
-            if module[0] == RIPQUIZ:
+            if module[0] in quizzes.keys():
                 tp = "quiz"
-                #Setting up ans dictionary
-                for num in rips_quiz.keys():
-                    pos = rips_quiz[num]
-                    #Adding question info associated with varient from previous attempt
-                    #to var_info
-                    var_info.append(pos[questions[quesnum]])
-                    var_list = var_info[quesnum]
-                    ans[questions[quesnum]] = var_list[1]
-                    #If the question has already been answered, lock it
-                    if questions[quesnum] in user_ans.keys():
-                        q_lock[quesnum] = "disabled"
-                    quesnum +=1
-            elif module[0] == HOLEQUIZ:
-                tp = "quiz"
-                for num in holes_quiz.keys():
-                    pos = holes_quiz[num]
-                    var_info.append(pos[questions[quesnum]])
-                    var_list = var_info[quesnum]
-                    ans[questions[quesnum]] = var_list[1]
-                    if questions[quesnum] in user_ans.keys():
-                        q_lock[quesnum] = "disabled"
-                    quesnum += 1
-            elif module[0] == WAVEQUIZ:
-                tp = "quiz"
-                for num in waves_quiz.keys():
-                    pos = waves_quiz[num]
-                    var_info.append(pos[questions[quesnum]])
-                    var_list = var_info[quesnum]
-                    ans[questions[quesnum]] = var_list[1]
-                    if questions[quesnum] in user_ans.keys():
-                        q_lock[quesnum] = "disabled"
-                    quesnum += 1
-            elif module[0] == RIPMOD:
+                q_dict = quizzes[module[0]]
+            elif module[0] in mods.keys():
                 tp = "module"
-                for num in rips_mod.keys():
-                    pos = rips_mod[num]
-                    var_info.append(pos[questions[quesnum]])
-                    var_list = var_info[quesnum]
-                    ans[questions[quesnum]] = var_list[1]
-                    quesnum += 1
-            elif module[0] == WAVEMOD:
-                tp = "module"
-                for num in waves_mod.keys():
-                    pos = waves_mod[num]
-                    var_info.append(pos[questions[quesnum]])
-                    var_list = var_info[quesnum]
-                    ans[questions[quesnum]] = var_list[1]
-                    quesnum += 1
-            elif module[0] == HOLEMOD:
-                tp = "module"
-                for num in holes_mod.keys():
-                    pos = holes_mod[num]
-                    var_info.append(pos[questions[quesnum]])
-                    var_list = var_info[quesnum]
-                    ans[questions[quesnum]] = var_list[1]
-                    quesnum += 1
+                q_dict = mods[module[0]]
+            #Setting up ans dictionary
+            for num in q_dict.keys():
+                pos = q_dict[num]
+                #Adding question info associated with varient from previous attempt
+                #to var_info
+                var_info.append(pos[questions[quesnum]])
+                var_list = var_info[quesnum]
+                ans[questions[quesnum]] = var_list[1]
+                #If the question has already been answered, lock it
+                if questions[quesnum] in user_ans.keys():
+                    q_lock[quesnum] = "disabled"
+                quesnum +=1
     #starting a new attempt
     else:
         #Puts together a question set for the relevant quiz / module
         #Setting up quiz questions
-        if module[0] == "Quiz - Rips":
+        if module[0] in quizzes.keys():
             tp = "quiz"
-            for num in rips_quiz.keys():
-                pos = rips_quiz[num]
-                pos_questions = []
-                for i in pos.keys():
-                    pos_questions.append(i)
-                q = random.choice(pos_questions)
-                questions.append(q)
-                var_info.append(pos[q])
-                var_list = var_info[quesnum]
-                ans[q] = var_list[1]
-                quesnum +=1
-        elif module[0] == "Quiz - Holes":
-            tp = "quiz"
-            for num in holes_quiz.keys():
-                pos = holes_quiz[num]
-                pos_questions = []
-                for i in pos.keys():
-                    pos_questions.append(i)
-                q = random.choice(pos_questions)
-                questions.append(q)
-                var_info.append(pos[q])
-                var_list = var_info[quesnum]
-                ans[q] = var_list[1]
-                quesnum +=1
-        elif module[0] == "Quiz - Waves":
-            tp = "quiz"
-            for num in waves_quiz.keys():
-                pos = waves_quiz[num]
-                pos_questions = []
-                for i in pos.keys():
-                    pos_questions.append(i)
-                q = random.choice(pos_questions)
-                questions.append(q)
-                var_info.append(pos[q])
-                var_list = var_info[quesnum]
-                ans[q] = var_list[1]
-                quesnum +=1
-        #Setting up module questions
-        elif module[0] == RIPMOD:
+            q_dict = quizzes[module[0]]
+        elif module[0] in mods.keys():
             tp = "module"
-            for num in rips_mod.keys():
-                pos = rips_mod[num]
-                pos_questions = []
-                for i in pos.keys():
-                    pos_questions.append(i)
-                q = random.choice(pos_questions)
-                questions.append(q)
-                var_info.append(pos[q])
-                var_list = var_info[quesnum]
-                ans[q] = var_list[1]
-                quesnum +=1
-        elif module[0] == WAVEMOD:
-            tp = "module"
-            for num in waves_mod.keys():
-                pos = waves_mod[num]
-                pos_questions = []
-                for i in pos.keys():
-                    pos_questions.append(i)
-                q = random.choice(pos_questions)
-                questions.append(q)
-                var_info.append(pos[q])
-                var_list = var_info[quesnum]
-                ans[q] = var_list[1]
-                quesnum +=1
-        elif module[0] == HOLEMOD:
-            tp = "module"
-            for num in holes_mod.keys():
-                pos = holes_mod[num]
-                pos_questions = []
-                for i in pos.keys():
-                    pos_questions.append(i)
-                q = random.choice(pos_questions)
-                questions.append(q)
-                var_info.append(pos[q])
-                var_list = var_info[quesnum]
-                ans[q] = var_list[1]
-                quesnum +=1
+            q_dict = mods[module[0]]
+        for num in q_dict.keys():
+            pos = q_dict[num]
+            pos_questions = []
+            for i in pos.keys():
+                pos_questions.append(i)
+            q = random.choice(pos_questions)
+            questions.append(q)
+            var_info.append(pos[q])
+            var_list = var_info[quesnum]
+            ans[q] = var_list[1]
+            quesnum +=1
         #Saving question set to ans_dicts
         attempt = ans_dicts[module[0]]
         qs = attempt[1]
@@ -468,9 +370,12 @@ def quiz():
     if no not in q_lock.keys():
         q_lock[no] = ""
     #sets mod_content to dictionary with data for this module
-    if tp == "module" and ((no+1) in module_content[module[0]]):
-        mod_content = module_content[module[0]]
-        page_content = mod_content[no+1]
+    if tp == "module":
+        content = module_content[module[0]]
+        if type(content) == dict:
+            if (no+1) in content.keys():
+                mod_content = module_content[module[0]]
+                page_content = mod_content[no+1]
     #Renders 1st / current question (depending on whether an attempt's in progress)
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
