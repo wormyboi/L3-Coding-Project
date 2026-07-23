@@ -286,3 +286,8 @@ footer {
     margin: 0;
     padding: 0;
 }
+
+.txt {
+    padding: 50px;
+    text-align: center;
+}

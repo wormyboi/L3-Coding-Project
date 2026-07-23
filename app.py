@@ -190,7 +190,48 @@ var_info = []
 #home page
 @app.route('/')
 def home():
-    return render_template('index.html', signin=user[0])
+    #setting list of recomended modules
+    recs.clear()
+    if len(c_atmpt) > 0:
+        #Adds any in progress modules frist
+        for item in c_atmpt:
+            if (item in mods) and (len(recs) < 3):
+                recs.append(item)
+        qlist = quizzes.keys()
+        mlist = mods.keys
+        qlist = list(qlist)
+        mlist = list(mlist)
+        #If ther are still less than 3 modules in the list,
+        #In progress quizzes are looked at
+        while len(recs) < 3:
+            for item in c_atmpt:
+                if item in quizzes:
+                    dex = qlist.index(item)
+                    if mlist[dex] in completem:
+                        recs.append(item)
+                #If a quiz is in progress, but the associated module hasn't been completed,
+                #this is recomended instead
+                    else:
+                        recs.append(mlist[dex])
+    #If there are still less than 3 items in recs, modules that haven't been attempted are added
+    if len(recs) < 3:
+        for item in mods.keys():
+            if (item not in completem) and (item not in c_atmpt):
+                recs.append(item)
+            if len(recs) == 3:
+                break
+    #If there are still less than 3 items, quizzes that haven't been attempted are added
+    if len(recs) < 3:
+        for item in quizzes.keys():
+                    if (item not in completeq) and (item not in c_atmpt):
+                        recs.append(item)
+                    if len(recs) == 3:
+                        break
+    if len(recs) < 3:
+        hs = {}
+        for item in high_scores.keys():
+            hs[item] = high_scores[item]
+    return render_template('index.html', signin=user[0], recs=recs, modcard=modcard)
 
 #all modules page
 @app.route('/modules')
