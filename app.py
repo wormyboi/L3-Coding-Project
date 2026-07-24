@@ -192,18 +192,20 @@ var_info = []
 def home():
     #setting list of recomended modules
     recs.clear()
+    qlist = []
+    for item in quizzes.keys():
+        qlist.append(item)
+    mlist = []
+    for item in mods.keys():
+        mlist.append(item)
     if len(c_atmpt) > 0:
         #Adds any in progress modules frist
         for item in c_atmpt:
             if (item in mods) and (len(recs) < 3):
                 recs.append(item)
-        qlist = quizzes.keys()
-        mlist = mods.keys
-        qlist = list(qlist)
-        mlist = list(mlist)
         #If ther are still less than 3 modules in the list,
         #In progress quizzes are looked at
-        while len(recs) < 3:
+        if len(recs) < 3:
             for item in c_atmpt:
                 if item in quizzes:
                     dex = qlist.index(item)
@@ -213,6 +215,8 @@ def home():
                 #this is recomended instead
                     else:
                         recs.append(mlist[dex])
+                    if len(recs) == 3:
+                        break
     #If there are still less than 3 items in recs, modules that haven't been attempted are added
     if len(recs) < 3:
         for item in mods.keys():
@@ -223,15 +227,31 @@ def home():
     #If there are still less than 3 items, quizzes that haven't been attempted are added
     if len(recs) < 3:
         for item in quizzes.keys():
-                    if (item not in completeq) and (item not in c_atmpt):
-                        recs.append(item)
-                    if len(recs) == 3:
-                        break
+            dex = qlist.index(item)
+            if (item not in completeq) and (item not in c_atmpt) and (mlist[dex] in completem):
+                recs.append(item)
+            if len(recs) == 3:
+                break
+    if len(recs) < 3:
+        for item in quizzes.keys():
+            if (item not in completeq) and (item not in c_atmpt) and (item not in recs):
+                recs.append(item)
+            if len(recs) == 3:
+                break
+    #If there's still less than 3 items, the quizzes with the lowest high scores are
+    #added.
     if len(recs) < 3:
         hs = {}
         for item in high_scores.keys():
             hs[item] = high_scores[item]
-    return render_template('index.html', signin=user[0], recs=recs, modcard=modcard)
+        while len(recs) < 3:
+            num = min(hs.values())
+            for mod in hs.keys():
+                if num == hs[mod]:
+                    recs.append(mod)
+                    del hs[mod]
+                    break
+    return render_template('index.html', signin=user[0], recs=recs, modcard_info=modcard)
 
 #all modules page
 @app.route('/modules')
@@ -272,7 +292,7 @@ def sign():
         user_ids[username] = password
         user[0] = "yes"
         user[1] = username
-        return render_template("index.html", signin=user[0])
+        return render_template("index.html", signin=user[0], modcard_info=modcard, recs=recs)
 
 #log in poage
 @app.route('/login')
@@ -280,6 +300,7 @@ def login():
     return render_template('login.html')
 #When user attempts to log in:
 @app.route('/log', methods=["POST"])
+
 def log():
     username = request.form.get("log_user")
     password = request.form.get("log_pass")
@@ -296,7 +317,8 @@ def log():
         #Logs the user in and returns them to the home page if so
                 user[0] = "yes"
                 user[1] = username
-                return render_template("index.html", signin=user[0])
+                return render_template("index.html", signin=user[0], 
+                                       modcard_info=modcard, recs=recs)
         #Returns error statement if not
         error_statement = "Username and password do not match"
         return render_template("login.html", error_statement=error_statement,
@@ -309,7 +331,7 @@ def logout():
     page = request.form.get("page")
     user[0] = "no"
     user[1] = "n/a"
-    return render_template(page, signin=user[0], modcard_info=modcard)
+    return render_template(page, signin=user[0], modcard_info=modcard, recs=recs)
 
 @app.route('/quiz', methods=["POST"])
 def quiz():

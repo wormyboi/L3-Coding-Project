@@ -24,6 +24,16 @@
             I'm kind like that.
         </p>
         <h2>Recomended Modules</h2>
+        <div class="card_container">
+            {% for mod in recs: %}
+                <form action="/quiz" method="post" class="modcard">
+                    <input type="hidden" name="act" value="{{ mod }}">
+                    <input type="image" src="{{ modcard_info[mod][0] }}" alt="{{ modcard_info[mod][1] }}" width="100%" height="auto">
+                    <br>
+                    <input type="submit" value="{{ mod }}" class="modlink" class="modlink_a">
+                </form>
+            {% endfor %}
+        </div>
     </body>
 {% endblock %}
 </html>
