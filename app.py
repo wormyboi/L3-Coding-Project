@@ -1,10 +1,23 @@
 from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 import random
 import os
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///account.db'
+app.config['SQALCHEMY_TRACK_MODIFICATIONS'] = False
+#Initialising database
+db = SQLAlchemy(app)
 
 #Set up
+#Creating up db model
+class Account(db.Model):
+    username = db.Column(db.String(50), primary_key=True)
+    password = db.Column(db.String(65), nullable=False)
+
+    def __repr__(self):
+        return f"Username: {self.username}, Password: {self.password}"
+
 #Constants
 RIPMOD = "Rips"
 RIPQUIZ = "Quiz - Rips"
@@ -286,12 +299,17 @@ def sign():
     if username in user_ids.keys():
         error_statement = "Username is already taken."
         return render_template('signup.html', error_statement=error_statement)
+    elif username == '' or password == '':
+        error_statement = "Please fill in all fields"
     else:
         #Adds account details to dictionary, logs user in, and returns to
         #the home page if not
         user_ids[username] = password
         user[0] = "yes"
         user[1] = username
+        a = Account(username=username, password=password)
+        db.session.add(a)
+        db.session.commit()
         return render_template("index.html", signin=user[0], modcard_info=modcard, recs=recs)
 
 #log in poage
@@ -605,4 +623,6 @@ def exit():
 
 #Run program
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
