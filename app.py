@@ -14,9 +14,23 @@ db = SQLAlchemy(app)
 class Account(db.Model):
     username = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(65), nullable=False)
+    hs_ripquiz = db.Column(db.Integer)
+    hs_holequiz = db.Column(db.Integer)
+    hs_wavequiz = db.Column(db.Integer)
+    account = db.relationship("Attempts", back_populates="account")
 
     def __repr__(self):
         return f"Username: {self.username}, Password: {self.password}"
+
+class Attempts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    unit = db.Column(db.String(40), nullable=False)
+    completed = db.Column(db.String(1), nullable=False)
+    score = db.Column(db.Integer)
+    question_set = db.Column(db.Text)
+    user_answers = db.Column(db.Text)
+    username = db.Column(db.String, db.ForeignKey('account.username'))
+    account = db.relationship("Account", back_populates="attempts")
 
 #Constants
 RIPMOD = "Rips"
@@ -290,6 +304,7 @@ def profile():
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
+
 #When user attempts to sign up:
 @app.route('/sign', methods=["POST"])
 def sign():
@@ -301,13 +316,14 @@ def sign():
         return render_template('signup.html', error_statement=error_statement)
     elif username == '' or password == '':
         error_statement = "Please fill in all fields"
+        return render_template('signup.html', error_statement=error_statement)
     else:
         #Adds account details to dictionary, logs user in, and returns to
         #the home page if not
         user_ids[username] = password
         user[0] = "yes"
         user[1] = username
-        a = Account(username=username, password=password)
+        a = Account(username=username, password=password, hs_ripquiz=0, hs_holequiz=0, hs_wavequiz=0)
         db.session.add(a)
         db.session.commit()
         return render_template("index.html", signin=user[0], modcard_info=modcard, recs=recs)
@@ -316,9 +332,9 @@ def sign():
 @app.route('/login')
 def login():
     return render_template('login.html')
+
 #When user attempts to log in:
 @app.route('/log', methods=["POST"])
-
 def log():
     username = request.form.get("log_user")
     password = request.form.get("log_pass")
@@ -598,6 +614,13 @@ def endquiz():
     #Removes module / quiz from current attempts dictionary
     if module[0] in c_atmpt:
         c_atmpt.remove(module[0])
+    else:
+        #Adds attempt to attempt table in database if the user is signed in and the attempt already wasn't in progress
+        if user[0] == "yes":
+            a = Attempts(unit=module[0], completed="y", score=percent_score, 
+                        user_answers="_".join(user_ans), question_set="_".join(questions), username=user[1])
+            db.session.add(a)
+            db.session.commit()
     return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score, percent_score=percent_score)
 
 @app.route('/exit', methods=["POST"])
@@ -617,6 +640,17 @@ def exit():
     ans_dicts[module[0]] = attempt
     if module[0] in c_atmpt:
         c_atmpt.remove(module[0])
+        a = Account.query
+        a.question_set = "_".join(questions)
+        a.user_answers = "_".join(user_ans)
+    else:
+        #If the attempt was not already in progress, and the user is signed in,
+        #it is added to attempt table in the database
+        if user[0] == "yes":
+            a = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
+                         qusetion_set="_".join(questions), username=user[1])
+            db.session.add(a)
+            db.session.commit()
     c_atmpt.insert(0, module[0])
     return render_template("modules.html", signin=user[0])
 
