@@ -600,6 +600,15 @@ def endquiz():
     if mod[0] == "Quiz":
         if percent_score > high_scores[module[0]]:
             high_scores[module[0]] = percent_score
+            if user[0] == "yes":
+                a = db.get_or_404(Account, user[1])
+                if module[0] == RIPQUIZ:
+                    a.hs_ripquiz = percent_score
+                elif module[0] == HOLEQUIZ:
+                    a.hs_holequiz = percent_score
+                elif module[0] == WAVEQUIZ:
+                    a.hs_wavequiz = percent_score
+                db.session.commit()
     #Removes module / quiz from complete list if it's been completed previously,
     #then adds it back as the 1st item of the list.
     mod = module[0].split()
@@ -640,9 +649,10 @@ def exit():
     ans_dicts[module[0]] = attempt
     if module[0] in c_atmpt:
         c_atmpt.remove(module[0])
-        a = Account.query
-        a.question_set = "_".join(questions)
-        a.user_answers = "_".join(user_ans)
+        if user[0] == "yes":
+            a = db.session.scalars(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).first()
+            a.user_answers = "_".join(user_ans)
+            db.session.commit()
     else:
         #If the attempt was not already in progress, and the user is signed in,
         #it is added to attempt table in the database
