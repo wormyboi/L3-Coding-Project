@@ -26,7 +26,6 @@ class Attempts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     unit = db.Column(db.String(40), nullable=False)
     completed = db.Column(db.String(1), nullable=False)
-    score = db.Column(db.Integer)
     question_set = db.Column(db.Text)
     user_answers = db.Column(db.Text)
     username = db.Column(db.String, db.ForeignKey('account.username'))
@@ -44,7 +43,7 @@ HOLEQUIZ = "Quiz - Holes"
 user = ["no", "n/a"]
 
 #Temporary dictionary - will be replaced with database
-user_ids = {"bleh": "password123"}
+user_ids = {}
 
 #Reccomended modules to be displayed on home page
 recs = [RIPMOD, HOLEMOD, WAVEMOD]
@@ -311,10 +310,11 @@ def sign():
     username = request.form.get("sign_user")
     password = request.form.get("sign_pass")
     #Checks if username already exists
-    if username in user_ids.keys():
+    unames = db.session.scalars(db.select(Account.username)).all()
+    if username in unames:
         error_statement = "Username is already taken."
         return render_template('signup.html', error_statement=error_statement)
-    elif username == '' or password == '':
+    elif not username or not password:
         error_statement = "Please fill in all fields"
         return render_template('signup.html', error_statement=error_statement)
     else:
@@ -323,7 +323,8 @@ def sign():
         user_ids[username] = password
         user[0] = "yes"
         user[1] = username
-        a = Account(username=username, password=password, hs_ripquiz=0, hs_holequiz=0, hs_wavequiz=0)
+        a = Account(username=username, password=password, hs_ripquiz=high_scores[RIPQUIZ], 
+                    hs_holequiz=high_scores[HOLEQUIZ], hs_wavequiz=high_scores[WAVEQUIZ])
         db.session.add(a)
         db.session.commit()
         #Adding any attempts started / completed before signing up to Attempts table in database
@@ -331,15 +332,20 @@ def sign():
             for mod in c_atmpt:
                 attempt = ans_dicts[mod]
                 if len(attempt[0]) > 0:
-                    a = Attempts(unit=mod, completed="n", score=0, question_set=attempt[1],
+                    a = Attempts(unit=mod, completed="n", question_set=attempt[1],
                                  user_answers="_".join(attempt[0]), username=user[1])
+                    db.session.add(a)
                 else:
-                    a = Attempts(unit=mod, completed="n", score=0, question_set=attempt[1],
+                    a = Attempts(unit=mod, completed="n", question_set=attempt[1],
                                                      user_answers="_", username=user[1])
+                    db.session.add(a)
         for mod in completem:
             a = Attempts(unit=mod, completed="y", username=user[1])
+            db.session.add(a)
         for mod in completeq:
-            a = Attempts(unit=mod, completed="y", username=user[0])
+            a = Attempts(unit=mod, completed="y", username=user[1])
+            db.session.add(a)
+        db.session.commit()
         return render_template("index.html", signin=user[0], modcard_info=modcard, recs=recs)
 
 #log in poage
@@ -359,9 +365,11 @@ def log():
         return render_template("login.html", error_statement=error_statement,
                             log_user=username, log_pass=password)
     else:
-    #Checks if username and password exist
-        if username in user_ids.keys():
-            if user_ids[username] == password:
+    #Checks if username exists and that the password matches it
+        unames = db.session.scalars(db.select(Account.username)).all()
+        if username in unames:
+            a = db.session.scalars(db.select(Account.password)).where(Account.username == username).one()
+            if db.get_or_404(Account, username) == password:
         #Logs the user in and returns them to the home page if so
                 user[0] = "yes"
                 user[1] = username
@@ -640,8 +648,8 @@ def endquiz():
     else:
         #Adds attempt to attempt table in database if the user is signed in and the attempt already wasn't in progress
         if user[0] == "yes":
-            a = Attempts(unit=module[0], completed="y", score=percent_score, 
-                        user_answers="_".join(user_ans), question_set="_".join(questions), username=user[1])
+            a = Attempts(unit=module[0], completed="y", user_answers="_".join(user_ans), 
+                         question_set="_".join(questions), username=user[1])
             db.session.add(a)
             db.session.commit()
     return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score, percent_score=percent_score)
@@ -665,9 +673,10 @@ def exit():
     if module[0] in c_atmpt:
         c_atmpt.remove(module[0])
         if user[0] == "yes":
-            a = db.session.scalars(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).first()
-            a.user_answers = "_".join(user_ans)
-            db.session.commit()
+            a = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one()
+            print(a)
+            #a.user_answers = "_".join(user_ans)
+            #db.session.commit()
     else:
         #If the attempt was not already in progress, and the user is signed in,
         #it is added to attempt table in the database
