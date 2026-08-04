@@ -17,7 +17,7 @@ class Account(db.Model):
     hs_ripquiz = db.Column(db.Integer)
     hs_holequiz = db.Column(db.Integer)
     hs_wavequiz = db.Column(db.Integer)
-    account = db.relationship("Attempts", back_populates="account")
+    attempts = db.relationship("Attempts", back_populates="account")
 
     def __repr__(self):
         return f"Username: {self.username}, Password: {self.password}"
@@ -326,6 +326,20 @@ def sign():
         a = Account(username=username, password=password, hs_ripquiz=0, hs_holequiz=0, hs_wavequiz=0)
         db.session.add(a)
         db.session.commit()
+        #Adding any attempts started / completed before signing up to Attempts table in database
+        if len(c_atmpt) > 0:
+            for mod in c_atmpt:
+                attempt = ans_dicts[mod]
+                if len(attempt[0]) > 0:
+                    a = Attempts(unit=mod, completed="n", score=0, question_set=attempt[1],
+                                 user_answers="_".join(attempt[0]), username=user[1])
+                else:
+                    a = Attempts(unit=mod, completed="n", score=0, question_set=attempt[1],
+                                                     user_answers="_", username=user[1])
+        for mod in completem:
+            a = Attempts(unit=mod, completed="y", username=user[1])
+        for mod in completeq:
+            a = Attempts(unit=mod, completed="y", username=user[0])
         return render_template("index.html", signin=user[0], modcard_info=modcard, recs=recs)
 
 #log in poage
@@ -642,6 +656,7 @@ def exit():
     attempt[0] = prev_ans
     qs = attempt[1]
     if type(qs) == list:
+        qs.clear()
         for q in questions:
             qs.append(q)
     attempt[1] = qs
@@ -657,8 +672,12 @@ def exit():
         #If the attempt was not already in progress, and the user is signed in,
         #it is added to attempt table in the database
         if user[0] == "yes":
-            a = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
+            if len(user_ans) > 0:
+                a = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
                          qusetion_set="_".join(questions), username=user[1])
+            else:
+                a = Attempts(unit=module[0], completed="n", user_answers="_", 
+                            qusetion_set="_".join(questions), username=user[1])
             db.session.add(a)
             db.session.commit()
     c_atmpt.insert(0, module[0])
