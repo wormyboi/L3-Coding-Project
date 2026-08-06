@@ -6,11 +6,11 @@ import os
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///account.db'
 app.config['SQALCHEMY_TRACK_MODIFICATIONS'] = False
-#Initialising database
+# Initialising database
 db = SQLAlchemy(app)
 
-#Set up
-#Creating up db model
+# Set up
+# Creating up db model
 class Account(db.Model):
     username = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(65), nullable=False)
@@ -31,7 +31,7 @@ class Attempts(db.Model):
     username = db.Column(db.String, db.ForeignKey('account.username'))
     account = db.relationship("Account", back_populates="attempts")
 
-#Constants
+# Constants
 RIPMOD = "Rips"
 RIPQUIZ = "Quiz - Rips"
 WAVEMOD = "Waves"
@@ -39,16 +39,13 @@ WAVEQUIZ = "Quiz - Waves"
 HOLEMOD = "Holes"
 HOLEQUIZ = "Quiz - Holes"
 
-#If the user is signed in, username
+# If the user is signed in, username
 user = ["no", "n/a"]
 
-#Temporary dictionary - will be replaced with database
-user_ids = {}
-
-#Reccomended modules to be displayed on home page
+# Reccomended modules to be displayed on home page
 recs = [RIPMOD, HOLEMOD, WAVEMOD]
 
-#selected module
+# Selected module
 module=["none"]
 
 questions = []
@@ -58,13 +55,13 @@ ans = {}
 user_ans = {}
 high_scores = {RIPQUIZ: 0, HOLEQUIZ: 0, WAVEQUIZ: 0}
 
-#Modules / quizzes that are in progress
+# Modules / quizzes that are in progress
 c_atmpt = []
-#Completed modules / quizzes
+# Completed modules / quizzes
 completem = []
 completeq = []
 
-#Image information for each of the module / quiz cards on the modules / home pages
+# Image information for each of the module / quiz cards on the modules / home pages
 #"quiz / module name": ["src", "alt"]
 modcard = {
     RIPMOD: [os.path.join('/static', 'temp_ripcard.jpg'), "rip current"], 
@@ -75,7 +72,7 @@ modcard = {
     WAVEQUIZ: [os.path.join('/static', 'temp_wavecard.jpg'), "wave"]
     }
 
-#contain user answers for attempts currently in progress
+# Contain user answers for attempts currently in progress
 user_ans_rips = {}
 user_ans_holes = {}
 user_ans_waves = {}
@@ -89,18 +86,18 @@ qset_waves = []
 qset_ripsmod = []
 qset_holesmod = []
 qset_wavesmod = []
-#"Quiz / module name": [user answers, question set, current question number]
+# "Quiz / module name": [user answers, question set, current question number]
 ans_dicts = {
     RIPQUIZ: [user_ans_rips, qset_rips, 0], WAVEQUIZ: [user_ans_waves, qset_waves, 0], 
     HOLEQUIZ: [user_ans_holes, qset_holes, 0], RIPMOD: [user_ans_ripsmod, qset_ripsmod, 0], 
     WAVEMOD: [user_ans_wavesmod, qset_wavesmod, 0], HOLEMOD: [user_ans_holesmod, qset_holesmod, 0]
     }
 
- #which questions are no longer able to be answered
+ # Which questions are no longer able to be answered
 q_lock = {}
 
 
-#Dictionaries containing quiz / module questions and their answers
+# Dictionaries containing quiz / module questions and their answers
 rips_mod = {
     1: {"Starting info": ["infopage", "n/a"]},
     2: {"Follow up q (prob abt identification)": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
@@ -182,7 +179,7 @@ holes_quiz = {
     },
 }
 
-#Contains content (videos, photos, and text) for module infopages
+# Contains content (videos, photos, and text) for module infopages
 module_content = {
     RIPMOD: {
         1: {1: ["text", "Very enlightening intro text"]},
@@ -205,18 +202,18 @@ module_content = {
     }
 }
 
-#module / quiz names: question dictionary
+# Module / quiz names: question dictionary
 quizzes = {RIPQUIZ: rips_quiz, HOLEQUIZ: holes_quiz, WAVEQUIZ: waves_quiz}
 mods = {RIPMOD: rips_mod, HOLEMOD: holes_mod, WAVEMOD: waves_mod}
 
-#contains innermost lists from question dictionaries for selected questions
+# Contains innermost lists from question dictionaries for selected questions
 var_info = []
 
-#App Routes
-#home page
+# App Routes
+# Home page
 @app.route('/')
 def home():
-    #setting list of recomended modules
+    # Setting list of recomended modules
     recs.clear()
     qlist = []
     for item in quizzes.keys():
@@ -225,32 +222,32 @@ def home():
     for item in mods.keys():
         mlist.append(item)
     if len(c_atmpt) > 0:
-        #Adds any in progress modules frist
+        # Adds any in progress modules frist
         for item in c_atmpt:
             if (item in mods) and (len(recs) < 3):
                 recs.append(item)
-        #If ther are still less than 3 modules in the list,
-        #In progress quizzes are looked at
+        # If ther are still less than 3 modules in the list,
+        # In progress quizzes are looked at
         if len(recs) < 3:
             for item in c_atmpt:
                 if item in quizzes:
                     dex = qlist.index(item)
                     if mlist[dex] in completem:
                         recs.append(item)
-                #If a quiz is in progress, but the associated module hasn't been completed,
-                #this is recomended instead
+                # If a quiz is in progress, but the associated module hasn't been completed,
+                # this is recomended instead
                     else:
                         recs.append(mlist[dex])
                     if len(recs) == 3:
                         break
-    #If there are still less than 3 items in recs, modules that haven't been attempted are added
+    # If there are still less than 3 items in recs, modules that haven't been attempted are added
     if len(recs) < 3:
         for item in mods.keys():
             if (item not in completem) and (item not in c_atmpt):
                 recs.append(item)
             if len(recs) == 3:
                 break
-    #If there are still less than 3 items, quizzes that haven't been attempted are added
+    # If there are still less than 3 items, quizzes that haven't been attempted are added
     if len(recs) < 3:
         for item in quizzes.keys():
             dex = qlist.index(item)
@@ -264,8 +261,8 @@ def home():
                 recs.append(item)
             if len(recs) == 3:
                 break
-    #If there's still less than 3 items, the quizzes with the lowest high scores are
-    #added.
+    # If there's still less than 3 items, the quizzes with the lowest high scores are
+    # added.
     if len(recs) < 3:
         hs = {}
         for item in high_scores.keys():
@@ -279,12 +276,12 @@ def home():
                     break
     return render_template('index.html', signin=user[0], recs=recs, modcard_info=modcard)
 
-#all modules page
+# All Modules page
 @app.route('/modules')
 def modules():
     return render_template('modules.html', signin=user[0], modcard_info=modcard)
 
-#attempted modules page
+# Attempted Modules page
 @app.route('/attempted')
 def attempted():
     c_len = len(c_atmpt)
@@ -294,22 +291,22 @@ def attempted():
                             completeq=completeq, modcard_info=modcard, c_len=c_len,
                             completem_len=completem_len, completeq_len=completeq_len, hs=high_scores)
 
-#profile page
+# Profile page
 @app.route('/profile')
 def profile():
     return render_template('profile.html', username=user[1], signin=user[0])
 
-#sign up page
+# Sign up page
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
 
-#When user attempts to sign up:
+# When user attempts to sign up:
 @app.route('/sign', methods=["POST"])
 def sign():
     username = request.form.get("sign_user")
     password = request.form.get("sign_pass")
-    #Checks if username already exists
+    # Checks if username already exists
     unames = db.session.scalars(db.select(Account.username)).all()
     if username in unames:
         error_statement = "Username is already taken."
@@ -318,70 +315,69 @@ def sign():
         error_statement = "Please fill in all fields"
         return render_template('signup.html', error_statement=error_statement)
     else:
-        #Adds account details to dictionary, logs user in, and returns to
-        #the home page if not
-        user_ids[username] = password
+        # Adds account details to database, logs user in, and returns to
+        # the home page if not
         user[0] = "yes"
         user[1] = username
-        a = Account(username=username, password=password, hs_ripquiz=high_scores[RIPQUIZ], 
+        user_info = Account(username=username, password=password, hs_ripquiz=high_scores[RIPQUIZ], 
                     hs_holequiz=high_scores[HOLEQUIZ], hs_wavequiz=high_scores[WAVEQUIZ])
-        db.session.add(a)
+        db.session.add(user_info)
         db.session.commit()
-        #Adding any attempts started / completed before signing up to Attempts table in database
+        # Adding any attempts started / completed before signing up to Attempts table in database
         if len(c_atmpt) > 0:
             for mod in c_atmpt:
                 attempt = ans_dicts[mod]
                 if len(attempt[0]) > 0:
-                    a = Attempts(unit=mod, completed="n", question_set=attempt[1],
+                    atmpt = Attempts(unit=mod, completed="n", question_set=attempt[1],
                                  user_answers="_".join(attempt[0]), username=user[1])
-                    db.session.add(a)
+                    db.session.add(atmpt)
                 else:
-                    a = Attempts(unit=mod, completed="n", question_set=attempt[1],
+                    atmpt = Attempts(unit=mod, completed="n", question_set=attempt[1],
                                                      user_answers="_", username=user[1])
-                    db.session.add(a)
+                    db.session.add(atmpt)
         for mod in completem:
-            a = Attempts(unit=mod, completed="y", username=user[1])
-            db.session.add(a)
+            atmpt = Attempts(unit=mod, completed="y", username=user[1])
+            db.session.add(atmpt)
         for mod in completeq:
-            a = Attempts(unit=mod, completed="y", username=user[1])
-            db.session.add(a)
+            atmpt = Attempts(unit=mod, completed="y", username=user[1])
+            db.session.add(atmpt)
         db.session.commit()
         return render_template("index.html", signin=user[0], modcard_info=modcard, recs=recs)
 
-#log in poage
+# Log in poage
 @app.route('/login')
 def login():
     return render_template('login.html')
 
-#When user attempts to log in:
+# When user attempts to log in:
 @app.route('/log', methods=["POST"])
 def log():
     username = request.form.get("log_user")
     password = request.form.get("log_pass")
-    #Returns to log in page with error statement if username and password
-    #aren't both filled in
+    # Returns to log in page with error statement if username and password
+    # aren't both filled in
     if not username or not password:
         error_statement = "Please fill in all feilds"
         return render_template("login.html", error_statement=error_statement,
                             log_user=username, log_pass=password)
     else:
-    #Checks if username exists and that the password matches it
+    # Checks if username exists and that the password matches it
         unames = db.session.scalars(db.select(Account.username)).all()
         if username in unames:
-            a = db.session.scalars(db.select(Account.password)).where(Account.username == username).one()
-            if db.get_or_404(Account, username) == password:
-        #Logs the user in and returns them to the home page if so
+            user_info = db.get_or_404(Account, username)
+            if user_info.password == password:
+        # Logs the user in and returns them to the home page if so
                 user[0] = "yes"
                 user[1] = username
                 return render_template("index.html", signin=user[0], 
                                        modcard_info=modcard, recs=recs)
-        #Returns error statement if not
+        # Returns error statement if not
         error_statement = "Username and password do not match"
         return render_template("login.html", error_statement=error_statement,
                             log_user=username, log_pass=password)
 
 
-#Logs user out and returns them to the home page   
+# Logs user out and returns them to the home page   
 @app.route('/logout', methods=["POST"])
 def logout():
     page = request.form.get("page")
@@ -402,10 +398,10 @@ def quiz():
     quesnum = 0
     mod_content = {}
     page_content = {}
-    #Setting up question sets for selected module / quiz
+    # Setting up question sets for selected module / quiz
     module[0] = request.form.get("act")
     attempt = ans_dicts[module[0]]
-    #continuing an attempt
+    # Continuing an attempt
     if len(attempt[1]) >= 1:
         no = attempt[2]
         for q in attempt[1]:
@@ -420,22 +416,22 @@ def quiz():
             elif module[0] in mods.keys():
                 tp = "module"
                 q_dict = mods[module[0]]
-            #Setting up ans dictionary
+            # Setting up ans dictionary
             for num in q_dict.keys():
                 pos = q_dict[num]
-                #Adding question info associated with varient from previous attempt
-                #to var_info
+                # Adding question info associated with varient from previous attempt
+                # to var_info
                 var_info.append(pos[questions[quesnum]])
                 var_list = var_info[quesnum]
                 ans[questions[quesnum]] = var_list[1]
-                #If the question has already been answered, lock it
+                # If the question has already been answered, lock it
                 if questions[quesnum] in user_ans.keys():
                     q_lock[quesnum] = "disabled"
                 quesnum +=1
-    #starting a new attempt
+    # Starting a new attempt
     else:
-        #Puts together a question set for the relevant quiz / module
-        #Setting up quiz questions
+        # Puts together a question set for the relevant quiz / module
+        # Setting up quiz questions
         if module[0] in quizzes.keys():
             tp = "quiz"
             q_dict = quizzes[module[0]]
@@ -453,7 +449,7 @@ def quiz():
             var_list = var_info[quesnum]
             ans[q] = var_list[1]
             quesnum +=1
-        #Saving question set to ans_dicts
+        # Saving question set to ans_dicts
         attempt = ans_dicts[module[0]]
         qs = attempt[1]
         if type(qs) == list:
@@ -461,14 +457,14 @@ def quiz():
                 qs.append(q)
         attempt[1] = qs
         ans_dicts[module[0]] = attempt
-        #Setting module as the 1st item in the in progress modules list
+        # Setting module as the 1st item in the in progress modules list
         if module[0] in c_atmpt:
             c_atmpt.remove(module[0])
         c_atmpt.insert(0, module[0])
         no = 0
     num = str(no)
     var_list = var_info[no]
-    #If the question has a radio or checkbox input, sets up a list of options.
+    # If the question has a radio or checkbox input, sets up a list of options.
     if (var_list[0] != "text") and (var_list[0] != "infopage"):
         for optn in var_list:
             if optn != var_list[0]:
@@ -481,21 +477,21 @@ def quiz():
                 else:
                     checked[optn] = ""
         random.shuffle(opt)
-    #If the question has a text input, checks if it's already been answered
-    #and sets the answer as a placeholder if so.
+    # If the question has a text input, checks if it's already been answered
+    # and sets the answer as a placeholder if so.
     else:
         if questions[no] in user_ans.keys():
             q_ans = user_ans[questions[no]]
     if no not in q_lock.keys():
         q_lock[no] = ""
-    #sets mod_content to dictionary with data for this module
+    # Sets mod_content to dictionary with data for this module
     if tp == "module":
         content = module_content[module[0]]
         if type(content) == dict:
             if (no+1) in content.keys():
                 mod_content = module_content[module[0]]
                 page_content = mod_content[no+1]
-    #Renders 1st / current question (depending on whether an attempt's in progress)
+    # Renders 1st / current question (depending on whether an attempt's in progress)
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
                             var_list=var_list, opt=opt, signin=user[0], checked=checked,
@@ -505,7 +501,7 @@ def quiz():
 def quizpage():
     opt = []
     checked = {}
-    #setting up local variables again
+    # Setting up local variables again
     quesnum = len(questions)
     act_type = request.form.get("act_type")
     num = request.form.get("q_num")
@@ -515,17 +511,17 @@ def quizpage():
         q_lock[no] = ""
     if (no+1) not in q_lock.keys():
         q_lock[no+1] = ""
-    #initially setting up as though there are no messages
+    # Initially setting up as though there are no messages
     msg = False
     msgtype = "none"
-    #if this is a module or a quiz
+    # If this is a module or a quiz
     mod = module[0]
     modu = mod.split()
     if modu[0] == "Quiz":
         tp = "quiz"
     else:
         tp = "module"
-    #Checking user answer or moving to the next page
+    # Checking user answer or moving to the next page
     if act_type == "next":
         no +=1
         num=str(no)
@@ -535,11 +531,11 @@ def quizpage():
             user_ans[q] = u_ans
             if tp == "quiz":
                 q_lock[no] = "disabled"
-            #Saving answer to ans_dicts
+            # Saving answer to ans_dicts
             attempt = ans_dicts[module[0]]
             attempt[0][q] = u_ans
             ans_dicts[module[0]] = attempt
-        #If the user didn't enter an answer, return an error message
+        # If the user didn't enter an answer, return an error message
         else:
             msgtype = "errormsg"
             msg = "Please enter an answer"
@@ -554,8 +550,8 @@ def quizpage():
             msgtype = "errormsg"
     else:
         q_ans = ""
-    #Setting var_list to the list of information for the question that's
-    #going to be displayed and setting up a list of options if necessary
+    # Setting var_list to the list of information for the question that's
+    # going to be displayed and setting up a list of options if necessary
     var_list = var_info[no]
     if (var_list[0] != "text") and (var_list[0] != "infopage"):
         for optn in var_list:
@@ -566,15 +562,15 @@ def quizpage():
                 else:
                     checked[optn] = ""
         random.shuffle(opt)
-    #setting up module and page content again
+    # Setting up module and page content again
     if tp == "module" and ((no+1) in module_content[module[0]]):
         mod_content = module_content[module[0]]
         page_content = mod_content[no+1]
     else:
         mod_content = {}
         page_content = {}
-    #Goes back to quizbase webpage with a message checking the user is ready 
-    #to submit their attempt if they click 'finish quiz'
+    # Goes back to quizbase webpage with a message checking the user is ready 
+    # to submit their attempt if they click 'finish quiz'
     if act_type == "check":
         if len(user_ans) < len(ans):
             error_message = "Are you sure you want to finish this attempt?\nSome questions are unanswered"
@@ -586,7 +582,7 @@ def quizpage():
             return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
                                 module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt,
                                 q_lock=q_lock[no], q_ans=q_ans, checked=checked, page_content=page_content)
-    #Sends user back to quizbase, either with the next question or their answers checked
+    # Sends user back to quizbase, either with the next question or their answers checked
     else:
         return render_template("quizbase.html", no=no, module=module[0], questions=questions, ans=ans, tp=tp, 
                                quesnum=quesnum, num=num, var_list=var_list, opt=opt, signin=user[0], msg=msg, msgtype=msgtype,
@@ -623,16 +619,16 @@ def endquiz():
         if percent_score > high_scores[module[0]]:
             high_scores[module[0]] = percent_score
             if user[0] == "yes":
-                a = db.get_or_404(Account, user[1])
+                user_info = db.get_or_404(Account, user[1])
                 if module[0] == RIPQUIZ:
-                    a.hs_ripquiz = percent_score
+                    user_info.hs_ripquiz = percent_score
                 elif module[0] == HOLEQUIZ:
-                    a.hs_holequiz = percent_score
+                    user_info.hs_holequiz = percent_score
                 elif module[0] == WAVEQUIZ:
-                    a.hs_wavequiz = percent_score
+                    user_info.hs_wavequiz = percent_score
                 db.session.commit()
-    #Removes module / quiz from complete list if it's been completed previously,
-    #then adds it back as the 1st item of the list.
+    # Removes module / quiz from complete list if it's been completed previously,
+    # then adds it back as the 1st item of the list.
     mod = module[0].split()
     if mod[0] == "Quiz":
         if module[0] in completeq:
@@ -642,15 +638,15 @@ def endquiz():
         if module[0] in completem:
             completem.remove(module[0])
         completem.insert(0, module[0])
-    #Removes module / quiz from current attempts dictionary
+    # Removes module / quiz from current attempts dictionary
     if module[0] in c_atmpt:
         c_atmpt.remove(module[0])
     else:
-        #Adds attempt to attempt table in database if the user is signed in and the attempt already wasn't in progress
+        # Adds attempt to attempt table in database if the user is signed in and the attempt already wasn't in progress
         if user[0] == "yes":
-            a = Attempts(unit=module[0], completed="y", user_answers="_".join(user_ans), 
+            atmpt = Attempts(unit=module[0], completed="y", user_answers="_".join(user_ans), 
                          question_set="_".join(questions), username=user[1])
-            db.session.add(a)
+            db.session.add(atmpt)
             db.session.commit()
     return render_template("endquiz.html", signin=user[0], quesnum=quesnum, score=score, percent_score=percent_score)
 
@@ -673,27 +669,27 @@ def exit():
     if module[0] in c_atmpt:
         c_atmpt.remove(module[0])
         if user[0] == "yes":
-            a = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one()
-            print(a)
-            #a.user_answers = "_".join(user_ans)
-            #db.session.commit()
+            atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one()
+            print(atmpt)
+            atmpt.user_answers = "_".join(user_ans)
+            db.session.commit()
     else:
-        #If the attempt was not already in progress, and the user is signed in,
-        #it is added to attempt table in the database
+        # If the attempt was not already in progress, and the user is signed in,
+        # it is added to attempt table in the database
         if user[0] == "yes":
             if len(user_ans) > 0:
-                a = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
+                atmpt = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
                          qusetion_set="_".join(questions), username=user[1])
             else:
-                a = Attempts(unit=module[0], completed="n", user_answers="_", 
+                atmpt = Attempts(unit=module[0], completed="n", user_answers="_", 
                             qusetion_set="_".join(questions), username=user[1])
-            db.session.add(a)
+            db.session.add(atmpt)
             db.session.commit()
     c_atmpt.insert(0, module[0])
     return render_template("modules.html", signin=user[0])
 
 
-#Run program
+# Run program
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
