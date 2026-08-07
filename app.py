@@ -383,6 +383,21 @@ def logout():
     page = request.form.get("page")
     user[0] = "no"
     user[1] = "n/a"
+    # Resets lists / dictionaries relating to user activity
+    c_atmpt.clear()
+    completem.clear()
+    completeq.clear()
+    recs = [RIPMOD, HOLEMOD, WAVEMOD]
+    for unit in high_scores:
+        high_scores[unit] = 0
+    for attempt in ans_dicts.keys():
+        for num in ans_dicts[attempt]:
+                if type(num) == list or type(num) == dict:
+                    num.clear()
+                    ans_dicts[attempt][dex] = num
+                    dex += 1
+                else:
+                    ans_dicts[attempt][dex] = 0
     return render_template(page, signin=user[0], modcard_info=modcard, recs=recs)
 
 @app.route('/quiz', methods=["POST"])
@@ -666,17 +681,17 @@ def exit():
     attempt[1] = qs
     attempt[2] = int(num)
     ans_dicts[module[0]] = attempt
-    if module[0] in c_atmpt:
-        c_atmpt.remove(module[0])
-        if user[0] == "yes":
-            atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one()
-            print(atmpt)
-            atmpt.user_answers = "_".join(user_ans)
-            db.session.commit()
-    else:
-        # If the attempt was not already in progress, and the user is signed in,
-        # it is added to attempt table in the database
-        if user[0] == "yes":
+    # Checks if attempt is already in database if user is signed in
+    if user[0] == "yes":
+        atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).one_or_none()
+        print(atmpt)
+        # If it is, user_answers is updated (if the user has answered any questions)
+        if atmpt != None:
+            if len(user_ans) > 0:
+                atmpt.user_answers = "_".join(user_ans)
+                db.session.commit()
+        # If the attempt isn't in the database, it is added
+        else:
             if len(user_ans) > 0:
                 atmpt = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
                          qusetion_set="_".join(questions), username=user[1])
