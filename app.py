@@ -683,21 +683,21 @@ def exit():
     ans_dicts[module[0]] = attempt
     # Checks if attempt is already in database if user is signed in
     if user[0] == "yes":
-        atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).one_or_none()
+        atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one_or_none
         print(atmpt)
         # If it is, user_answers is updated (if the user has answered any questions)
         if atmpt != None:
             if len(user_ans) > 0:
-                atmpt.user_answers = "_".join(user_ans)
+                atmpt.user_answers = "_".join(user_ans.values())
                 db.session.commit()
         # If the attempt isn't in the database, it is added
         else:
             if len(user_ans) > 0:
                 atmpt = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
-                         qusetion_set="_".join(questions), username=user[1])
+                         question_set="_".join(questions), username=user[1])
             else:
                 atmpt = Attempts(unit=module[0], completed="n", user_answers="_", 
-                            qusetion_set="_".join(questions), username=user[1])
+                            question_set="_".join(questions), username=user[1])
             db.session.add(atmpt)
             db.session.commit()
     c_atmpt.insert(0, module[0])
