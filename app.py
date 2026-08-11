@@ -31,6 +31,11 @@ class Attempts(db.Model):
     username = db.Column(db.String, db.ForeignKey('account.username'))
     account = db.relationship("Account", back_populates="attempts")
 
+    def __repr__(self):
+        return (f"id: {self.id}, Unit: {self.unit}, Completed: {self.completed}"
+                f"Question Set: {self.question_set}, User Answers: {self.user_answers}"
+                f"Username: {self.username}")
+
 # Constants
 RIPMOD = "Rips"
 RIPQUIZ = "Quiz - Rips"
@@ -366,9 +371,16 @@ def log():
         if username in unames:
             user_info = db.get_or_404(Account, username)
             if user_info.password == password:
-        # Logs the user in and returns them to the home page if so
+            # Logs the user in and returns them to the home page if so
                 user[0] = "yes"
                 user[1] = username
+                # Setting up dictionaries containing attempt information
+                in_progress = db.session.scalars(db.select(Attempts.unit).filter_by(username=user[1], completed="n")).all()
+                for unit in in_progress:
+                    if unit in c_atmpt:
+                        c_atmpt.remove(unit)
+                    c_atmpt.insert(0, unit)
+                # Returns user to home page
                 return render_template("index.html", signin=user[0], 
                                        modcard_info=modcard, recs=recs)
         # Returns error statement if not
@@ -683,7 +695,7 @@ def exit():
     ans_dicts[module[0]] = attempt
     # Checks if attempt is already in database if user is signed in
     if user[0] == "yes":
-        atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one_or_none
+        atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one_or_none()
         print(atmpt)
         # If it is, user_answers is updated (if the user has answered any questions)
         if atmpt != None:
