@@ -1,3 +1,4 @@
+'''A beach safety education app | Hannah Brown | 13/08/2026'''
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import random
@@ -214,6 +215,20 @@ mods = {RIPMOD: rips_mod, HOLEMOD: holes_mod, WAVEMOD: waves_mod}
 # Contains innermost lists from question dictionaries for selected questions
 var_info = []
 
+# Functions
+'''Removes attempt information from the ans_dicts dictionary for a specified.'''
+def clear_attempt(unit):
+    attempt = ans_dicts[unit]
+    dex = 0
+    for num in attempt:
+        if type(num) == list or type(num) == dict:
+            num.clear()
+            attempt[dex] = num
+            dex += 1
+        else:
+            attempt[dex] = 0
+    ans_dicts[unit] = attempt
+
 # App Routes
 # Home page
 @app.route('/')
@@ -374,12 +389,42 @@ def log():
             # Logs the user in and returns them to the home page if so
                 user[0] = "yes"
                 user[1] = username
+                # If the user got a new high score before logging in it is
+                # added to the database, otherwise the high scores dictionary
+                # is set to their previous high scores
+                if user_info.hs_ripquiz < high_scores[RIPQUIZ]:
+                    user_info.hs_ripquiz = high_scores[RIPQUIZ]
+                    db.session.commit()
+                else:
+                    high_scores[RIPQUIZ] = user_info.hs_ripquiz
+                if user_info.hs_holequiz < high_scores[HOLEQUIZ]:
+                    user_info.hs_holequiz = high_scores[HOLEQUIZ]
+                    db.session.commit()
+                else:
+                    high_scores[RIPQUIZ] = user_info.hs_ripquiz
+                #Adding any attempts they started before signing in to the attempts database
+                for unit in completem:
+                    atmpt = Attempts(unit=unit, completed="y", username=user[1])
+                    db.session.add(atmpt)
+                for unit in completeq:
+                    atmpt = Attempts(unit=unit, completed="y", username=user[1])
+                    db.session.add(atmpt)
+                db.session.commit()
+                completem.clear()
+                completeq.clear()
                 # Setting up dictionaries containing attempt information
                 in_progress = db.session.scalars(db.select(Attempts.unit).filter_by(username=user[1], completed="n")).all()
                 for unit in in_progress:
                     if unit in c_atmpt:
                         c_atmpt.remove(unit)
+                        clear_attempt(unit)
                     c_atmpt.insert(0, unit)
+                complete = db.session.scalars(db.select(Attempts.unit).filter_by(username=user[1], completed="y")).all()
+                for unit in complete:
+                    if unit in mods.keys():
+                        completem.insert(0,unit)
+                    elif unit in quizzes.keys():
+                        completeq.insert(0,unit)
                 # Returns user to home page
                 return render_template("index.html", signin=user[0], 
                                        modcard_info=modcard, recs=recs)
@@ -396,20 +441,18 @@ def logout():
     user[0] = "no"
     user[1] = "n/a"
     # Resets lists / dictionaries relating to user activity
-    c_atmpt.clear()
-    completem.clear()
-    completeq.clear()
     recs = [RIPMOD, HOLEMOD, WAVEMOD]
     for unit in high_scores:
         high_scores[unit] = 0
-    for attempt in ans_dicts.keys():
-        for num in ans_dicts[attempt]:
-                if type(num) == list or type(num) == dict:
-                    num.clear()
-                    ans_dicts[attempt][dex] = num
-                    dex += 1
-                else:
-                    ans_dicts[attempt][dex] = 0
+    for mod in c_atmpt:
+        clear_attempt(mod)
+    for mod in completem:
+        clear_attempt(mod)
+    for mod in completeq:
+        clear_attempt(mod)
+    c_atmpt.clear()
+    completeq.clear()
+    completem.clear()
     return render_template(page, signin=user[0], modcard_info=modcard, recs=recs)
 
 @app.route('/quiz', methods=["POST"])
@@ -617,16 +660,7 @@ def quizpage():
 
 @app.route('/endquiz', methods=["POST"])
 def endquiz():
-    attempt = ans_dicts[module[0]]
-    dex = 0
-    for num in attempt:
-        if type(num) == list or type(num) == dict:
-            num.clear()
-            attempt[dex] = num
-            dex += 1
-        else:
-            attempt[dex] = 0
-    ans_dicts[module[0]] = attempt
+    clear_attempt(module[0])
     dex = 0
     quesnum = 0
     score = 0
