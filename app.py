@@ -401,7 +401,12 @@ def log():
                     user_info.hs_holequiz = high_scores[HOLEQUIZ]
                     db.session.commit()
                 else:
-                    high_scores[RIPQUIZ] = user_info.hs_ripquiz
+                    high_scores[HOLEQUIZ] = user_info.hs_holequiz
+                if user_info.hs_wavequiz < high_scores[WAVEQUIZ]:
+                    user_info.hs_wavequiz = high_scores[WAVEQUIZ]
+                    db.session.commit()
+                else:
+                    high_scores[HOLEQUIZ] = user_info.hs_holequiz
                 #Adding any attempts they started before signing in to the attempts database
                 for unit in completem:
                     atmpt = Attempts(unit=unit, completed="y", username=user[1])
@@ -414,11 +419,34 @@ def log():
                 completeq.clear()
                 # Setting up dictionaries containing attempt information
                 in_progress = db.session.scalars(db.select(Attempts.unit).filter_by(username=user[1], completed="n")).all()
+                for unit in c_atmpt:
+                    if unit not in in_progress:
+                        attempt_info = ans_dicts[unit]
+                        if len(attempt_info[0]) > 0:
+                            atmpt = Attempts(unit=unit, completed="n", username=user[1], 
+                                            question_set="_".join(attempt_info[1]), user_answers="_".join(attempt_info[0]))
+                        else:
+                            atmpt = Attempts(unit=unit, completed="n", username=user[1], user_answers="_",
+                                             question_set="_".join(attempt_info[1]))
+                        db.session.add(atmpt)
+                        db.session.commit()
+                        c_atmpt.remove(unit)
                 for unit in in_progress:
                     if unit in c_atmpt:
                         c_atmpt.remove(unit)
                         clear_attempt(unit)
                     c_atmpt.insert(0, unit)
+                    q_set = db.session.scalars(db.select(Attempts.question_set).filter_by(username=user[1], completed="n", unit=unit)).one()
+                    u_ans = db.session.scalars(db.select(Attempts.user_answers).filter_by(username=user[1], completed="n", unit=unit)).one()
+                    qs = q_set.split("_")
+                    if u_ans == "_":
+                        answers = []
+                    else:
+                        answers = u_ans.split("_")
+                    attempt_info = ans_dicts[unit]
+                    attempt_info[0] = answers
+                    attempt_info[1] = qs
+                    ans_dicts[unit] = attempt_info
                 complete = db.session.scalars(db.select(Attempts.unit).filter_by(username=user[1], completed="y")).all()
                 for unit in complete:
                     if unit in mods.keys():
@@ -561,6 +589,11 @@ def quiz():
             if (no+1) in content.keys():
                 mod_content = module_content[module[0]]
                 page_content = mod_content[no+1]
+    # Adds attempt to Attempts table in database
+    atmpt = Attempts(unit=module[0], completed="n", user_answers="_", 
+                    question_set="_".join(questions), username=user[1])
+    db.session.add(atmpt)
+    db.session.commit()
     # Renders 1st / current question (depending on whether an attempt's in progress)
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
@@ -605,6 +638,9 @@ def quizpage():
             attempt = ans_dicts[module[0]]
             attempt[0][q] = u_ans
             ans_dicts[module[0]] = attempt
+            atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one_or_none()
+            atmpt.user_answers = "_".join()
+            db.session.commit()
         # If the user didn't enter an answer, return an error message
         else:
             msgtype = "errormsg"
@@ -730,22 +766,11 @@ def exit():
     # Checks if attempt is already in database if user is signed in
     if user[0] == "yes":
         atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one_or_none()
-        print(atmpt)
         # If it is, user_answers is updated (if the user has answered any questions)
         if atmpt != None:
             if len(user_ans) > 0:
                 atmpt.user_answers = "_".join(user_ans.values())
                 db.session.commit()
-        # If the attempt isn't in the database, it is added
-        else:
-            if len(user_ans) > 0:
-                atmpt = Attempts(unit=module[0], completed="n", user_answers="_".join(user_ans), 
-                         question_set="_".join(questions), username=user[1])
-            else:
-                atmpt = Attempts(unit=module[0], completed="n", user_answers="_", 
-                            question_set="_".join(questions), username=user[1])
-            db.session.add(atmpt)
-            db.session.commit()
     c_atmpt.insert(0, module[0])
     return render_template("modules.html", signin=user[0])
 
