@@ -45,9 +45,10 @@ form {
     text-align: center;
     width: 100%;
     margin-top: 0%;
-    padding-top: 7%;
-    /*padding-bottom: 8%;*/
+    padding-top: 9%;
+    padding-bottom: 5%;
     background-color: aqua;
+    background-image: url('hero_img.jpg');
     margin-bottom: 0%;
 }
 

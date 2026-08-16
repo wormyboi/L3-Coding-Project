@@ -348,11 +348,15 @@ def sign():
             for mod in c_atmpt:
                 attempt = ans_dicts[mod]
                 if len(attempt[0]) > 0:
-                    atmpt = Attempts(unit=mod, completed="n", question_set=attempt[1],
-                                 user_answers="_".join(attempt[0]), username=user[1])
+                    ans_list = []
+                    if type(attempt[0]) == dict:
+                        for q in attempt[0].keys():
+                            ans_list.append(f"{q}]{attempt[0][q]}")
+                    atmpt = Attempts(unit=mod, completed="n", question_set="_".join(attempt[1]),
+                                 user_answers="_".join(ans_list), username=user[1])
                     db.session.add(atmpt)
                 else:
-                    atmpt = Attempts(unit=mod, completed="n", question_set=attempt[1],
+                    atmpt = Attempts(unit=mod, completed="n", question_set="_".join(attempt[1]),
                                                      user_answers="_", username=user[1])
                     db.session.add(atmpt)
         for mod in completem:
@@ -423,8 +427,12 @@ def log():
                     if unit not in in_progress:
                         attempt_info = ans_dicts[unit]
                         if len(attempt_info[0]) > 0:
+                            ans_list = []
+                            if type(attempt_info[0]) == dict:
+                                for q in attempt_info[0].keys():
+                                    ans_list.append(f"{q}]{attempt_info[0][q]}")
                             atmpt = Attempts(unit=unit, completed="n", username=user[1], 
-                                            question_set="_".join(attempt_info[1]), user_answers="_".join(attempt_info[0]))
+                                            question_set="_".join(attempt_info[1]), user_answers="_".join(ans_list))
                         else:
                             atmpt = Attempts(unit=unit, completed="n", username=user[1], user_answers="_",
                                              question_set="_".join(attempt_info[1]))
@@ -444,7 +452,11 @@ def log():
                     else:
                         answers = u_ans.split("_")
                     attempt_info = ans_dicts[unit]
-                    attempt_info[0] = answers
+                    attempt_info[0] = {}
+                    for qna in answers:
+                        q = qna.split("]")
+                        question = q[0]
+                        attempt_info[0][question] = q[1]
                     attempt_info[1] = qs
                     ans_dicts[unit] = attempt_info
                 complete = db.session.scalars(db.select(Attempts.unit).filter_by(username=user[1], completed="y")).all()
@@ -590,10 +602,11 @@ def quiz():
                 mod_content = module_content[module[0]]
                 page_content = mod_content[no+1]
     # Adds attempt to Attempts table in database
-    atmpt = Attempts(unit=module[0], completed="n", user_answers="_", 
+    if user[0] == "yes":
+        atmpt = Attempts(unit=module[0], completed="n", user_answers="_", 
                     question_set="_".join(questions), username=user[1])
-    db.session.add(atmpt)
-    db.session.commit()
+        db.session.add(atmpt)
+        db.session.commit()
     # Renders 1st / current question (depending on whether an attempt's in progress)
     return render_template("quizbase.html", module=module[0], questions=questions,
                             ans=ans, quesnum=quesnum, tp=tp, no=no, num=num, 
@@ -638,9 +651,14 @@ def quizpage():
             attempt = ans_dicts[module[0]]
             attempt[0][q] = u_ans
             ans_dicts[module[0]] = attempt
-            atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one_or_none()
-            atmpt.user_answers = "_".join()
-            db.session.commit()
+            # Updates user answers in Attempts table in database if user is signed in
+            if user[0] == "yes":
+                atmpt = db.session.execute(db.select(Attempts).filter_by(username=user[1], unit=module[0], completed="n")).scalar_one_or_none()
+                answer_list = []
+                for q in user_ans.keys():
+                    answer_list.append(f"{q}]{user_ans[q]}")
+                atmpt.user_answers = "_".join(answer_list)
+                db.session.commit()
         # If the user didn't enter an answer, return an error message
         else:
             msgtype = "errormsg"
@@ -741,7 +759,7 @@ def endquiz():
     else:
         # Adds attempt to attempt table in database if the user is signed in and the attempt already wasn't in progress
         if user[0] == "yes":
-            atmpt = Attempts(unit=module[0], completed="y", user_answers="_".join(user_ans), 
+            atmpt = Attempts(unit=module[0], completed="y", 
                          question_set="_".join(questions), username=user[1])
             db.session.add(atmpt)
             db.session.commit()
@@ -769,8 +787,14 @@ def exit():
         # If it is, user_answers is updated (if the user has answered any questions)
         if atmpt != None:
             if len(user_ans) > 0:
-                atmpt.user_answers = "_".join(user_ans.values())
+                ans_list = []
+                for q in user_ans.keys():
+                    ans_list.append(f"{q}]{user_ans[q]}")
+                atmpt.user_answers = "_".join(ans_list)
                 db.session.commit()
+    # Removes unit from current attempts list and re-inserts it at the front
+    if module[0] in c_atmpt:
+        c_atmpt.remove(module[0])
     c_atmpt.insert(0, module[0])
     return render_template("modules.html", signin=user[0])
 
