@@ -47,8 +47,10 @@ form {
     margin-top: 0%;
     padding-top: 9%;
     padding-bottom: 5%;
-    background-color: aqua;
-    background-image: url('hero_img.jpg');
+    background-image: url("/static/hero_img.jpg");
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
     margin-bottom: 0%;
 }
 
@@ -252,7 +254,7 @@ form {
 }
 
 .pagenum {
-    margin: -1% 2% 3% 2%;
+    margin: -1% 2% 6% 7%;
 }
 
 body {
@@ -291,4 +293,20 @@ footer {
 .txt {
     padding: 50px;
     text-align: center;
+}
+
+.unit_content {
+    width: 70%;
+    margin-left: 5%;
+    margin-bottom: 5%;
+}
+
+.quizq {
+    width: 70%;
+    margin-left: 5%;
+}
+
+.modtitle {
+    padding-left: 5%;
+    padding-top: 2%;
 }

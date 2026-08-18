@@ -36,13 +36,13 @@
             <input type="hidden" name="q_num" value="{{num}}">
             <input type="submit" value="Save and Exit">
         </form>
-        <h1>{{ module }}</h1>
+        <h1 class="modtitle">{{ module }}</h1>
         <p class="pagenum">Page {{ no+1 }} of {{ quesnum }}</p>
         <!-- if the user is completing a quiz -->
         {% if tp == "quiz" %}
-            <h2>{{ questions[no] }}</h2>
+            <h2 class="quizq">{{ questions[no] }}</h2>
             <!-- inputs to answer current question-->
-            <form action="/quizpage" method="post">
+            <form action="/quizpage" method="post" class="unit_content">
                 {% if var_list[0]=="text": %}
                     <input type="text" name="u_ans" value="{{ q_ans }}" {{ q_lock }}><br>
                 {% elif var_list[0]=="radio" or var_list[0]=="checkbox": %}
@@ -62,24 +62,26 @@
             {% endif %}
         <!-- If the user is completing a module -->
         {% else: %}
-            <h2>{{ questions[no] }}</h2>
+            <h2 class="quizq">{{ questions[no] }}</h2>
             <!-- If the page has no question -->
             {% if var_list[0] == "infopage": %}
-                {% for slot_num in page_content.keys(): %}
-                    {% if page_content[slot_num][0] == "text": %}
-                        <p class="modtxt">{{ page_content[slot_num][1] }}</p>
-                    {% elif page_content[slot_num][0] == "img": %}
-                        <img src="{{ page_content[slot_num][1] }}" alt="{{ page_content[slot_num][2] }}" class="modimg">
-                    {% elif page_content[slot_num][0] == "video": %}
-                        <video width="50%" height="auto" controls>
-                            <source src="{{ page_content[slot_num][1] }}" type="video/mp4">
-                            This video cannot be played on your browser.
-                        </video>
-                    {% endif %}
-                {% endfor %}
+                <div class="unit_content">
+                    {% for slot_num in page_content.keys(): %}
+                        {% if page_content[slot_num][0] == "text": %}
+                            <p class="modtxt">{{ page_content[slot_num][1] }}</p>
+                        {% elif page_content[slot_num][0] == "img": %}
+                            <img src="{{ page_content[slot_num][1] }}" alt="{{ page_content[slot_num][2] }}" class="modimg">
+                        {% elif page_content[slot_num][0] == "video": %}
+                            <video width="50%" height="auto" controls>
+                                <source src="{{ page_content[slot_num][1] }}" type="video/mp4">
+                                This video cannot be played on your browser.
+                            </video>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             <!-- If it does have a question display question form -->
             {% else: %}
-                <form action="/quizpage" method="post">
+                <form action="/quizpage" method="post" class="unit_content">
                     {% if var_list[0]=="text": %}
                         <input type="text" name="u_ans" value="{{ q_ans }}" {{ q_lock }}><br>
                     {% elif var_list[0]=="radio" or var_list[0]=="checkbox": %}
@@ -101,7 +103,7 @@
         {% endif %}
         <!-- Navigation menu - allows user to move to any question number -->
         <div class="quiznav">
-            <p>Quiz Navigation</p>
+            <p>Navigation</p>
             <ul class="page_list">
                 {% for number in range(quesnum): %}
                     {% if number != no: %}

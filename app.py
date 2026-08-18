@@ -16,7 +16,7 @@ class Account(db.Model):
     username = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(65), nullable=False)
     hs_ripquiz = db.Column(db.Integer)
-    hs_holequiz = db.Column(db.Integer)
+    hs_tidequiz = db.Column(db.Integer)
     hs_wavequiz = db.Column(db.Integer)
     attempts = db.relationship("Attempts", back_populates="account")
 
@@ -42,14 +42,14 @@ RIPMOD = "Rips"
 RIPQUIZ = "Quiz - Rips"
 WAVEMOD = "Waves"
 WAVEQUIZ = "Quiz - Waves"
-HOLEMOD = "Holes"
-HOLEQUIZ = "Quiz - Holes"
+TIDEMOD = "Tides"
+TIDEQUIZ = "Quiz - Tides"
 
 # If the user is signed in, username
 user = ["no", "n/a"]
 
 # Reccomended modules to be displayed on home page
-recs = [RIPMOD, HOLEMOD, WAVEMOD]
+recs = [RIPMOD, TIDEMOD, WAVEMOD]
 
 # Selected module
 module=["none"]
@@ -59,7 +59,7 @@ questions = []
 ans = {}
 
 user_ans = {}
-high_scores = {RIPQUIZ: 0, HOLEQUIZ: 0, WAVEQUIZ: 0}
+high_scores = {RIPQUIZ: 0, TIDEQUIZ: 0, WAVEQUIZ: 0}
 
 # Modules / quizzes that are in progress
 c_atmpt = []
@@ -72,31 +72,31 @@ completeq = []
 modcard = {
     RIPMOD: [os.path.join('/static', 'temp_ripcard.jpg'), "rip current"], 
     WAVEMOD: [os.path.join('/static', 'temp_wavecard.jpg'), "wave"], 
-    HOLEMOD: [os.path.join('/static', 'temp_holecard.jpg'), "beach with exposed holes"], 
+    TIDEMOD: [os.path.join('/static', 'temp_holecard.jpg'), "beach with exposed holes"], 
     RIPQUIZ: [os.path.join('/static', 'temp_ripcard.jpg'), "rip current"], 
-    HOLEQUIZ: [os.path.join('/static', 'temp_holecard.jpg'), "beach with exposed holes"], 
+    TIDEQUIZ: [os.path.join('/static', 'temp_holecard.jpg'), "beach with exposed holes"], 
     WAVEQUIZ: [os.path.join('/static', 'temp_wavecard.jpg'), "wave"]
     }
 
 # Contain user answers for attempts currently in progress
 user_ans_rips = {}
-user_ans_holes = {}
+user_ans_tides = {}
 user_ans_waves = {}
 user_ans_ripsmod = {}
-user_ans_holesmod = {}
+user_ans_tidesmod = {}
 user_ans_wavesmod = {}
 #contains question sets for attempts currently in progress
 qset_rips = []
-qset_holes = []
+qset_tides = []
 qset_waves = []
 qset_ripsmod = []
-qset_holesmod = []
+qset_tidesmod = []
 qset_wavesmod = []
 # "Quiz / module name": [user answers, question set, current question number]
 ans_dicts = {
     RIPQUIZ: [user_ans_rips, qset_rips, 0], WAVEQUIZ: [user_ans_waves, qset_waves, 0], 
-    HOLEQUIZ: [user_ans_holes, qset_holes, 0], RIPMOD: [user_ans_ripsmod, qset_ripsmod, 0], 
-    WAVEMOD: [user_ans_wavesmod, qset_wavesmod, 0], HOLEMOD: [user_ans_holesmod, qset_holesmod, 0]
+    TIDEQUIZ: [user_ans_tides, qset_tides, 0], RIPMOD: [user_ans_ripsmod, qset_ripsmod, 0], 
+    WAVEMOD: [user_ans_wavesmod, qset_wavesmod, 0], TIDEMOD: [user_ans_tidesmod, qset_tidesmod, 0]
     }
 
  # Which questions are no longer able to be answered
@@ -105,7 +105,7 @@ q_lock = {}
 
 # Dictionaries containing quiz / module questions and their answers
 rips_mod = {
-    1: {"Starting info": ["infopage", "n/a"]},
+    1: {"What is a Rip?": ["infopage", "n/a"]},
     2: {"Follow up q (prob abt identification)": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
     3: {"Further info": ["infopage", "n/a"]},
     4: {"Video maybe": ["infopage", "n/a"]},
@@ -160,7 +160,7 @@ waves_quiz = {
         "wawawawa": ["text", "beats me"]
     },
 }
-holes_mod = {
+tides_mod = {
     1: {"Starting info": ["infopage", "n/a"]},
     2: {"Follow up q": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
     3: {"Further info": ["infopage", "n/a"]},
@@ -170,7 +170,7 @@ holes_mod = {
     7: {"Risks around holes": ["infopage", "n/a"]},
     8: {"q abt prev info": ["radio", "ans", "not ans"]}
 }
-holes_quiz = {
+tides_quiz = {
     1: {
         "holes q goes here": ["checkbox", "right", "wrong"],
         "holes q goes here too": ["checkbox", "right", "not right", "I'm so tired"],
@@ -188,7 +188,11 @@ holes_quiz = {
 # Contains content (videos, photos, and text) for module infopages
 module_content = {
     RIPMOD: {
-        1: {1: ["text", "Very enlightening intro text"]},
+        1: {1: ["text", "A rip current is a narrow body of water traveling out to sea.\n"
+                "Rips often pose a risk to swimmers due to their ability to quickly sweep them out to sea."], 
+            2: ["text", "Rips form as a result of waves pushing water towards the shore. This causes rip "
+                "currents to form, both along the beach and out to sea, as a way for the water to escape. "
+                "Stronger waves will result in larger rips."]},
         3: {1: ["text", "Some info abt rips"], 2: ["img", os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"], 3: ["text", "More info abt rips, now with the context of the picture"]},
         4: {1: ["video", os.path.join('/static', 'temp_video.mp4')], 2: ["text", "Wasn't that such an interesting video. So interesting that I've decided to write more abt it here."]},
         7: {1: ["text", "Almost done! (hasn't this been so fun?)"], 2: ["img", os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"]},
@@ -200,7 +204,7 @@ module_content = {
         6: {1: ["text", "Nyeeeooooom"], 2: ["img", os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], 3: ["text", ":O that wasn't a picture of a wave"]},
         9: {1: ["img", os.path.join('/static', 'temp_wavecard.jpg'),"alt text here"], 2: ["text", "Yipee! All done!"]},
     },
-    HOLEMOD: {
+    TIDEMOD: {
         1: {1: ["text", "Another intro speel (maybe not 'another' depending on what order you're doing these in)"]},
         3: {1: ["text", "The real module starts here (as the kids say)"], 2: ["img", os.path.join('/static', 'temp_holecard.jpg'),"alt text here"], 3: ["text", "Look at that picture"], 4: ["video", os.path.join('/static', 'temp_video.mp4')]},
         5: {1: ["text", "Another video"], 2: ["video", os.path.join('/static', 'temp_video.mp4')]},
@@ -209,8 +213,8 @@ module_content = {
 }
 
 # Module / quiz names: question dictionary
-quizzes = {RIPQUIZ: rips_quiz, HOLEQUIZ: holes_quiz, WAVEQUIZ: waves_quiz}
-mods = {RIPMOD: rips_mod, HOLEMOD: holes_mod, WAVEMOD: waves_mod}
+quizzes = {RIPQUIZ: rips_quiz, TIDEQUIZ: tides_quiz, WAVEQUIZ: waves_quiz}
+mods = {RIPMOD: rips_mod, TIDEMOD: tides_mod, WAVEMOD: waves_mod}
 
 # Contains innermost lists from question dictionaries for selected questions
 var_info = []
@@ -340,7 +344,7 @@ def sign():
         user[0] = "yes"
         user[1] = username
         user_info = Account(username=username, password=password, hs_ripquiz=high_scores[RIPQUIZ], 
-                    hs_holequiz=high_scores[HOLEQUIZ], hs_wavequiz=high_scores[WAVEQUIZ])
+                    hs_tidequiz=high_scores[TIDEQUIZ], hs_wavequiz=high_scores[WAVEQUIZ])
         db.session.add(user_info)
         db.session.commit()
         # Adding any attempts started / completed before signing up to Attempts table in database
@@ -401,16 +405,16 @@ def log():
                     db.session.commit()
                 else:
                     high_scores[RIPQUIZ] = user_info.hs_ripquiz
-                if user_info.hs_holequiz < high_scores[HOLEQUIZ]:
-                    user_info.hs_holequiz = high_scores[HOLEQUIZ]
+                if user_info.hs_tidequiz < high_scores[TIDEQUIZ]:
+                    user_info.hs_tidequiz = high_scores[TIDEQUIZ]
                     db.session.commit()
                 else:
-                    high_scores[HOLEQUIZ] = user_info.hs_holequiz
+                    high_scores[TIDEQUIZ] = user_info.hs_tidequiz
                 if user_info.hs_wavequiz < high_scores[WAVEQUIZ]:
                     user_info.hs_wavequiz = high_scores[WAVEQUIZ]
                     db.session.commit()
                 else:
-                    high_scores[HOLEQUIZ] = user_info.hs_holequiz
+                    high_scores[TIDEQUIZ] = user_info.hs_tidequiz
                 #Adding any attempts they started before signing in to the attempts database
                 for unit in completem:
                     atmpt = Attempts(unit=unit, completed="y", username=user[1])
@@ -481,7 +485,7 @@ def logout():
     user[0] = "no"
     user[1] = "n/a"
     # Resets lists / dictionaries relating to user activity
-    recs = [RIPMOD, HOLEMOD, WAVEMOD]
+    recs = [RIPMOD, TIDEMOD, WAVEMOD]
     for unit in high_scores:
         high_scores[unit] = 0
     for mod in c_atmpt:
@@ -737,8 +741,8 @@ def endquiz():
                 user_info = db.get_or_404(Account, user[1])
                 if module[0] == RIPQUIZ:
                     user_info.hs_ripquiz = percent_score
-                elif module[0] == HOLEQUIZ:
-                    user_info.hs_holequiz = percent_score
+                elif module[0] == TIDEQUIZ:
+                    user_info.hs_tidequiz = percent_score
                 elif module[0] == WAVEQUIZ:
                     user_info.hs_wavequiz = percent_score
                 db.session.commit()
