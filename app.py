@@ -106,7 +106,7 @@ q_lock = {}
 # Dictionaries containing quiz / module questions and their answers
 rips_mod = {
     1: {"What is a Rip?": ["infopage", "n/a"]},
-    2: {"Follow up q (prob abt identification)": ["checkbox", "ans", "not ans", "other ans", "3rd ans", "other not ans"]},
+    2: {"How to Identify a Rip": ["infopage", "n/a"]},
     3: {"Further info": ["infopage", "n/a"]},
     4: {"Video maybe": ["infopage", "n/a"]},
     5: {"another q (maybe with img options)": ["checkbox", "correct", "no", "also no"]},
@@ -189,10 +189,23 @@ tides_quiz = {
 module_content = {
     RIPMOD: {
         1: {1: ["text", "A rip current is a narrow body of water traveling out to sea.\n"
-                "Rips often pose a risk to swimmers due to their ability to quickly sweep them out to sea."], 
-            2: ["text", "Rips form as a result of waves pushing water towards the shore. This causes rip "
-                "currents to form, both along the beach and out to sea, as a way for the water to escape. "
-                "Stronger waves will result in larger rips."]},
+                "Rips often pose a risk to swimmers due to their ability to quickly sweep them"
+                " out to sea."], 
+            2: ["img", os.path.join('/static', 'rip_anatomy.jpg'),"anatomy of a rip"],
+            3: ["text", "Rips form as a result of waves pushing water towards the shore. This "
+                "causes rip currents to form, both along the beach and out to sea, as a way for "
+                "the water to escape. Stronger waves will result in larger rips."]},
+        2: {1: ["strongtxt", "Common signs of rip currents include:"],
+            2: ["li1" "Calmer patches of water with waves on either side"],
+            3: ["li", "Deeper channels in the sea floor (denoted by darker patches of water)"],
+            4: ["li", "A riple pattern in the sand"],
+            5: ["li", "Foamy or discoloured water"],
+            6: ["lif", "Debris travelling out to sea"],
+            7: ["text", "Rips, especially stronger ones may appear like 'rivers' flowing out to "
+                "sea."],
+            8: ["strongtxt", "If you're unsure of the presence of a rip current, ask a lifeguard at "
+                "a lifeguarded beach. Overwise, stay out"],
+            },
         3: {1: ["text", "Some info abt rips"], 2: ["img", os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"], 3: ["text", "More info abt rips, now with the context of the picture"]},
         4: {1: ["video", os.path.join('/static', 'temp_video.mp4')], 2: ["text", "Wasn't that such an interesting video. So interesting that I've decided to write more abt it here."]},
         7: {1: ["text", "Almost done! (hasn't this been so fun?)"], 2: ["img", os.path.join('/static', 'temp_ripcard.jpg'),"alt text here"]},
@@ -700,7 +713,11 @@ def quizpage():
     # Goes back to quizbase webpage with a message checking the user is ready 
     # to submit their attempt if they click 'finish quiz'
     if act_type == "check":
-        if len(user_ans) < len(ans):
+        qnum = 0
+        for nums in range(len(questions)):
+            if var_info[nums][0] != "infopage":
+                qnum +=1
+        if len(user_ans) < qnum:
             error_message = "Are you sure you want to finish this attempt?\nSome questions are unanswered"
             return render_template("quizbase.html", signin=user[0], quesnum=quesnum, error_message=error_message, no=no,
                                 module=module[0], questions=questions, ans=ans, tp=tp, num=num, var_list=var_list, opt=opt,

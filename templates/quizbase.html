@@ -69,6 +69,16 @@
                     {% for slot_num in page_content.keys(): %}
                         {% if page_content[slot_num][0] == "text": %}
                             <p class="modtxt">{{ page_content[slot_num][1] }}</p>
+                        {% elif page_content[slot_num][0] == "strongtxt": %}
+                            <p class="modtxt"><strong>{{ page_content[slot_num][1] }}</strong></p>
+                        {% elif page_content[slot_num][0] == "li1": %}
+                            <ul class="modtxt">
+                                <li>{{ page_content[slot_num][1] }}</li>
+                        {% elif page_content[slot_num][0] == "li": %}
+                                <li>{{ page_content[slot_num][1] }}</li>
+                        {% elif page_content[slot_num][0] == "lif": %}
+                                <li>{{ page_content[slot_num][1] }}</li>
+                            </ul>
                         {% elif page_content[slot_num][0] == "img": %}
                             <img src="{{ page_content[slot_num][1] }}" alt="{{ page_content[slot_num][2] }}" class="modimg">
                         {% elif page_content[slot_num][0] == "video": %}
